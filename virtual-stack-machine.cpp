@@ -2,152 +2,130 @@
 #include "vector"
 #include "stack"
 #include "map"
+#include "virtual-stack-machine.h"
 using namespace std;
-
-enum OP_TYPE
-{
-    NUMBER,
-    NAME,
-    ADD,
-    ASSIGN
-};
-enum ATOM_TYPE
-{
-    ATOM_NAME,
-    ATOM_NUMBER
-};
-struct Atom
-{
-    ATOM_TYPE flags;
-    double fval;
-    string sval;
-};
-struct Context
-{
-    vector<Atom *> atoms;
-    map<string, Atom *> globalScope;
-};
-struct CodeGenerator
-{
-    uint8_t *base; //指令的起始地址
-    uint8_t *ptr;  //指令移动指针
-};
-struct Script
-{
-    uint8_t *code;
-    unsigned length;
-};
-CodeGenerator *NewCodeGenerator();
-Script *NewScript(CodeGenerator *cg);
-void excuteCode(Context &kc, Script *script);
-void generateCode(Context &kc, CodeGenerator *cg);
-Atom *getAtom(Context &kc, int index);
-Atom *generateAtom(string val);
-Atom *generateAtom(double val);
 int main()
 {
-    Context kc;
+    Context context;
+    context.stack.ptr = context.stack.base = (Datum *)malloc(sizeof(Datum) * 1000);
     CodeGenerator *cg = NewCodeGenerator();
-    generateCode(kc, cg);
+    generateCode(context, cg);
     Script *script = NewScript(cg);
-    excuteCode(kc, script);
+    context.staticLink = new Object();
+    Datum *result;
+    excuteCode(&context, script, context.staticLink, result);
 }
-void excuteCode(Context &kc, Script *script)
+void excuteCode(Context *context, Script *script, Object *staticLink, Datum *result)
 {
     uint8_t *ptr = script->code;
     uint8_t *end = ptr + script->length;
-    stack<Atom *> stack;
+    Stack &stack = context->stack;
     while (ptr < end)
     {
         OP_TYPE op = (OP_TYPE)ptr[0];
         switch (op)
         {
-        case NUMBER:
-            stack.push(getAtom(kc, ptr[1]));
-            ptr++;
-            break;
-        case NAME:
+        case OP_TYPE::NAME:
+        case OP_TYPE::NUMBER:
         {
-            Atom *nameAtom = getAtom(kc, ptr[1]);
-            if (kc.globalScope.find(nameAtom->sval) == kc.globalScope.end())
-                throw nameAtom->sval + " not defined";
-            stack.push(kc.globalScope[nameAtom->sval]);
-            ptr++;
+            Datum d;
+            d.type = DATUM_TYPE::ATOM;
+            d.u.atom = getAtom(context, ptr[1]);
+            stack.ptr[0] = d;
+            stack.ptr++;
         }
         break;
-        case ASSIGN:
+        case OP_TYPE::ASSIGN:
         {
-            Atom *nameAtom = getAtom(kc, ptr[1]);
-            Atom *valueAtom = stack.top();
-            stack.pop();
-            kc.globalScope[nameAtom->sval] = valueAtom;
-            ptr++;
+            Datum *rval = stack.ptr--;
+            resolveValue(context, rval);
+            Datum *lval = stack.ptr--;
+            resolveSymbol(context, lval);
+            if (lval->type == DATUM_TYPE::ATOM)
+            {
+                //构建解析符号，数据挂到自己上
+                Symobl *sym = new Symobl();
+                sym->type = SYMOBL_TYPE::VARIABLE;
+                sym->entry.key = lval->u.atom;
+                sym->entry.value = rval;
+                auto next = context->staticLink->list;
+                sym->next = next;
+                context->staticLink->list = sym;
+            }
+            else
+            {
+                //将数据覆盖到解析符号的值上
+                lval->u.sym->entry.value = rval;
+            }
         }
         break;
-        case ADD:
-            Atom *lval = stack.top();
-            stack.pop();
-            Atom *rval = stack.top();
-            stack.pop();
-            stack.push(generateAtom(lval->fval + rval->fval));
-            break;
+        case OP_TYPE::ADD:
+            Datum *rval = stack.ptr--;
+            resolveValue(context, rval);
+            Datum *lval = stack.ptr--;
+            resolveValue(context, lval);
+            long long int value = lval->u.nval + rval->u.nval;
+            //将结果压入栈中
+            Datum val;
+            val.u.nval = value;
+            val.type = DATUM_TYPE::NUMBER;
+            stack.ptr[0] = val;
+            stack.ptr++;
         }
         ptr++;
     }
-
-    map<string, Atom *>::iterator it;
-    for (it = kc.globalScope.begin(); it != kc.globalScope.end(); ++it)
-    {
-        cout << it->first << ": ";
-        if (it->second->flags == ATOM_NUMBER)
-            cout << it->second->fval << endl;
-        else
-            cout << it->second->sval << endl;
-    }
+}
+bool resolveValue(Context *context, Datum *dp)
+{
+    return true;
+}
+bool resolveSymbol(Context *context, Datum *dp)
+{
+    return true;
 }
 void emit1(CodeGenerator *cg, OP_TYPE type)
 {
-    cg->ptr[0] = type;
+    cg->ptr[0] = (uint8_t)type;
     cg->ptr++;
 }
 void emit2(CodeGenerator *cg, OP_TYPE type, uint8_t op1)
 {
-    cg->ptr[0] = type;
+    cg->ptr[0] = (uint8_t)type;
     cg->ptr[1] = op1;
     cg->ptr += 2;
 }
-void generateCode(Context &kc, CodeGenerator *cg)
+void generateCode(Context &context, CodeGenerator *cg)
 {
     //构建atoms
-    kc.atoms.push_back(generateAtom(2));
-    kc.atoms.push_back(generateAtom(3));
-    kc.atoms.push_back(generateAtom("a"));
-    kc.atoms.push_back(generateAtom("c"));
+    context.atoms.push_back(generateAtom(2));
+    context.atoms.push_back(generateAtom(3));
+    context.atoms.push_back(generateAtom("a"));
+    context.atoms.push_back(generateAtom("c"));
     //构建指令
-    emit2(cg, NUMBER, 0);
-    emit2(cg, NUMBER, 1);
-    emit1(cg, ADD);
-    emit2(cg, ASSIGN, 2);
-    emit2(cg, NAME, 2);
-    emit2(cg, NUMBER, 1);
-    emit1(cg, ADD);
-    emit2(cg, ASSIGN, 3);
+    emit2(cg, OP_TYPE::NUMBER, 0);
+    emit2(cg, OP_TYPE::NUMBER, 1);
+    emit1(cg, OP_TYPE::ADD);
+    emit2(cg, OP_TYPE::ASSIGN, 2);
+    emit2(cg, OP_TYPE::NAME, 2);
+    emit2(cg, OP_TYPE::NUMBER, 1);
+    emit1(cg, OP_TYPE::ADD);
+    emit2(cg, OP_TYPE::ASSIGN, 3);
 };
-Atom *getAtom(Context &kc, int index)
+Atom *getAtom(Context *context, int index)
 {
-    return kc.atoms[index];
+    return context->atoms[index];
 }
 Atom *generateAtom(double val)
 {
     Atom *atom = new Atom();
-    atom->flags = ATOM_NUMBER;
+    atom->type = ATOM_TYPE::NUMBER;
     atom->fval = val;
     return atom;
 }
 Atom *generateAtom(string val)
 {
     Atom *atom = new Atom();
-    atom->flags = ATOM_NAME;
+    atom->type = ATOM_TYPE::NAME;
     atom->sval = val;
     return atom;
 }

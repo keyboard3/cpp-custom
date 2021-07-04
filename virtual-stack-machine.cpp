@@ -7,12 +7,12 @@ using namespace std;
 int main()
 {
   Context *context = new Context(1000);
-  generateCode(context->script);
+  generateCode(context);
   Datum *result = new Datum();
-  excuteCode(context, context->script, context->staticLink, result);
-  cout << "result:" << result->u.nval << endl;
+  codeInterpret(context, context->script, context->staticLink, result);
+  dumpScope(context->staticLink);
 }
-void excuteCode(Context *context, Script *script, Object *slink, Datum *result)
+void codeInterpret(Context *context, Script *script, Scope *slink, Datum *result)
 {
   uint8_t *ptr = script->code;
   uint8_t *end = ptr + script->length;
@@ -41,23 +41,32 @@ void excuteCode(Context *context, Script *script, Object *slink, Datum *result)
       if (lval->type == DATUM_TYPE::ATOM)
       {
         //构建解析符号，数据挂到自己上
-        Symbol *sym = new Symbol();
-        sym->type = SYMBOL_TYPE::VARIABLE;
+        Symbol *sym = new Symbol(SYMBOL_TYPE::VARIABLE, context->staticLink);
         sym->entry.key = lval->u.atom;
-        sym->entry.value = new Datum();
-        memcpy(sym->entry.value, rval, sizeof(Datum));
-        sym->slot = 1;
-
-        auto next = context->staticLink->list;
-        sym->next = next;
-        context->staticLink->list = sym;
+        if (stack->frame != nullptr)
+        {
+          pushDatum(stack, rval);
+          sym->slot = stack->frame->nvars;
+          stack->frame->nvars++;
+        }
+        else
+        {
+          sym->entry.value = new Datum();
+          memcpy(sym->entry.value, rval, sizeof(Datum));
+        }
+        pushSymbol(sym, context->staticLink);
       }
-      else
+      else if (lval->u.sym->type == SYMBOL_TYPE::PROPERTY)
       {
-        //将数据覆盖到解析符号的值上
-        cout << "将数据覆盖到解析符号的值上" << lval->u.sym->entry.key->sval << endl;
-        lval->u.sym->entry.value = rval;
+        Property *prop = (Property *)lval->u.sym->entry.value;
+        memcpy(prop->datum, rval, sizeof(Datum));
       }
+      else if (stack->frame == nullptr)
+        lval->u.sym->entry.value = rval;
+      else if (lval->u.sym->type == SYMBOL_TYPE::ARGUMENT)
+        memcpy(&stack->frame->argv[lval->u.sym->slot], rval, sizeof(Datum));
+      else if (lval->u.sym->type == SYMBOL_TYPE::VARIABLE)
+        memcpy(&stack->frame->vars[lval->u.sym->slot], rval, sizeof(Datum));
     }
     break;
     case OP_TYPE::ADD:
@@ -82,6 +91,44 @@ void excuteCode(Context *context, Script *script, Object *slink, Datum *result)
       memcpy(result, rval, sizeof(Datum));
     }
     break;
+    case OP_TYPE::CALL:
+    {
+      unsigned argc = ptr[0];
+      ptr++;
+      Datum *funDatum = stack->ptr - argc - 1;
+      bool isOK = resolveValue(context, funDatum);
+      if (funDatum->type != DATUM_TYPE::FUNCTION)
+        throw funDatum->u.atom->sval + " not defined";
+      //创建栈帧
+      Frame *frame = new Frame();
+      frame->down = stack->frame;
+      stack->frame = frame;
+      frame->fun = funDatum->u.fun;
+      frame->argc = argc;
+      frame->argv = stack->ptr - argc;
+      frame->nvars = 0;
+      frame->vars = stack->ptr;
+      frame->scope = new Scope(frame->fun->slink);
+      frame->scope->list = frame->fun->script->args;
+      //给参数符号初始化栈帧的位置
+      int slot = 0;
+      for (Symbol *sym = frame->scope->list; sym != nullptr && slot < argc; sym = sym->next, slot++)
+      {
+        resolveValue(context, &frame->argv[slot]); //参数需要解析成数据才能用
+        sym->scope = frame->scope;
+        sym->slot = slot;
+      }
+      //调用
+      Datum *result = new Datum();
+      result->type = DATUM_TYPE::UNDEF;
+      codeInterpret(context, frame->fun->script, frame->scope, result);
+      //调用完毕还原栈帧
+      stack->frame = frame->down;
+      stack->ptr = frame->argv;
+      if (result->type != DATUM_TYPE::UNDEF)
+        pushDatum(stack, result);
+    }
+    break;
     }
   }
   context->staticLink = oldslink;
@@ -89,6 +136,17 @@ void excuteCode(Context *context, Script *script, Object *slink, Datum *result)
 Datum *popDatum(Stack *stack)
 {
   return --stack->ptr;
+}
+void pushDatum(Stack *stack, Datum *d)
+{
+  stack->ptr = d;
+  stack->ptr++;
+}
+void pushSymbol(Symbol *sym, Scope *scope)
+{
+  auto next = scope->list;
+  sym->next = next;
+  scope->list = sym;
 }
 void pushAtom(Atom *atom, Stack *stack)
 {
@@ -118,9 +176,12 @@ bool resolveValue(Context *context, Datum *dp)
       {
         dp->type = DATUM_TYPE::NUMBER;
         dp->u.nval = atom->nval;
+        // cout << "primary value:" << dp->u.nval << endl;
         return true;
       }
     }
+    // else if (dp->type == DATUM_TYPE::NUMBER)
+    //   cout << "primary value:" << dp->u.nval << endl;
     return false;
   };
   if (dp->type == DATUM_TYPE::SYMBOL)
@@ -128,28 +189,36 @@ bool resolveValue(Context *context, Datum *dp)
     auto sym = dp->u.sym;
     if (sym->type == SYMBOL_TYPE::PROPERTY)
     {
-      cout << "resolveValue PROPERTY" << endl;
-      //TODO 处理成从propty上拿
+      Property *prop = (Property *)sym->entry.value;
+      memcpy(dp, prop->datum, sizeof(Datum));
       primaryAtomToDatum();
       return true;
     }
     if (sym->entry.value)
     {
       memcpy(dp, (Datum *)sym->entry.value, sizeof(Datum));
-      //TODO 获取到的
       primaryAtomToDatum();
       return true;
     }
-    cout << "准备从栈帧中获取" << endl;
+    Frame *targetFp = nullptr;
+    for (Frame *fp = context->stack.frame; fp != nullptr; fp = fp->down)
+    {
+      if (fp->scope == sym->scope)
+      {
+        targetFp = fp;
+        break;
+      }
+    }
+    if (targetFp == nullptr)
+    {
+      cout << "未找到栈帧" << endl;
+      return false;
+    }
     //证明这个是从根栈帧上的符号，所以要找到scope对应的栈帧
     if (sym->type == SYMBOL_TYPE::ARGUMENT)
-    {
-      //TODO 如果是参数，读取栈帧上的参数区域数据
-    }
+      memcpy(dp, &targetFp->argv[sym->slot], sizeof(Datum));
     else if (sym->type == SYMBOL_TYPE::VARIABLE)
-    {
-      //TODO 如果是变量，则读取栈帧上的变量区域数据
-    }
+      memcpy(dp, &targetFp->vars[sym->slot], sizeof(Datum));
     primaryAtomToDatum();
     return true;
   }
@@ -177,11 +246,12 @@ bool resolveSymbol(Context *context, Datum *dp)
     return true;
   return false;
 }
-Symbol *findSymbol(Object *scope, Atom *atom)
+
+Symbol *findSymbol(Scope *scope, Atom *atom)
 {
   if (scope == nullptr)
     return nullptr;
-  for (Symbol *sym = scope->list; sym; sym = sym->next)
+  for (Symbol *sym = scope->list; sym != nullptr; sym = sym->next)
   {
     if (sym->entry.key == atom)
       return sym;
@@ -201,27 +271,58 @@ void emit2(Script *script, OP_TYPE type, uint8_t op1)
   script->code[base + 1] = op1;
   script->length += 2;
 }
-void generateCode(Script *script)
+void generateCode(Context *context)
 {
-  //构建atoms
+  Script *script = context->script;
   script->atoms.push_back(generateAtom(2));
   script->atoms.push_back(generateAtom(3));
   script->atoms.push_back(generateAtom("a"));
-  script->atoms.push_back(generateAtom("c"));
-  //构建指令
+  script->atoms.push_back(generateAtom("add"));
   emit2(script, OP_TYPE::NUMBER, 0);
   emit2(script, OP_TYPE::NUMBER, 1);
   emit1(script, OP_TYPE::ADD);
   emit2(script, OP_TYPE::NAME, 2);
   emit1(script, OP_TYPE::ASSIGN);
+  auto generateAddMethod = []() -> Script *
+  {
+    Script *script = new Script(1000);
+    script->atoms.push_back(generateAtom(12));
+    script->atoms.push_back(generateAtom(3));
+    script->atoms.push_back(generateAtom("a"));
+    script->atoms.push_back(generateAtom("arg"));
+    //构建atoms
+    emit2(script, OP_TYPE::NUMBER, 0);
+    emit2(script, OP_TYPE::NAME, 3);
+    emit1(script, OP_TYPE::ADD);
+    emit2(script, OP_TYPE::NUMBER, 1);
+    emit1(script, OP_TYPE::ADD);
+    emit2(script, OP_TYPE::NAME, 2);
+    emit1(script, OP_TYPE::ASSIGN);
+    emit2(script, OP_TYPE::NAME, 2);
+    emit2(script, OP_TYPE::RETURN, 1);
+    //将代码中符号是参数的提前挂出来
+    Symbol *sym = new Symbol(SYMBOL_TYPE::ARGUMENT, nullptr);
+    sym->entry.key = script->atoms[3];
+    script->args = sym;
+    return script;
+  };
+  emit2(script, OP_TYPE::NAME, 3);
   emit2(script, OP_TYPE::NAME, 2);
-  emit2(script, OP_TYPE::NUMBER, 1);
-  emit1(script, OP_TYPE::ADD);
-  emit2(script, OP_TYPE::NAME, 3);
+  emit2(script, OP_TYPE::CALL, 1);
+  emit2(script, OP_TYPE::NAME, 2);
   emit1(script, OP_TYPE::ASSIGN);
-  emit2(script, OP_TYPE::NAME, 3);
-  emit2(script, OP_TYPE::RETURN, 1);
-  cout << "code " << script->length << endl;
+  //函数调用指令
+  Script *mScript = generateAddMethod();
+  //建立函数符号
+  Symbol *sym = new Symbol(SYMBOL_TYPE::PROPERTY, context->staticLink);
+  sym->entry.key = script->atoms[3];
+  //创建function数据
+  Datum *fund = new Datum();
+  fund->type = DATUM_TYPE::FUNCTION;
+  fund->u.fun = new Function(sym->entry.key, mScript, context->staticLink);
+  //设置为属性的符号
+  sym->entry.value = new Property(fund);
+  pushSymbol(sym, context->staticLink);
 };
 Atom *getAtom(Script *script, int index)
 {
@@ -241,7 +342,7 @@ Atom *generateAtom(string val)
   atom->sval = val;
   return atom;
 }
-void dumpScope(Object *scope)
+void dumpScope(Scope *scope)
 {
   for (Symbol *sym = scope->list; sym; sym = sym->next)
   {
@@ -263,5 +364,7 @@ string to_op_str(OP_TYPE op)
     return "assign";
   case OP_TYPE::RETURN:
     return "return";
+  case OP_TYPE::CALL:
+    return "call";
   }
 }

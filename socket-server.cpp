@@ -27,7 +27,7 @@ int main()
         exit(1);
     }
 
-    std::cout << "监听" << MYPORT << "端口" << std::endl;
+    printf("监听%d端口", MYPORT);
     //linsten 成功返回0 出错返回-1
     if (listen(server_sockfd, QUEUE) == -1)
     {
@@ -37,18 +37,18 @@ int main()
 
     //客户端socket
     char buffer[BUFFER_SIZE];
-    struct sockaddr_in clinet_addr;
-    socklen_t length = sizeof(clinet_addr);
+    struct sockaddr_in client_addr;
+    socklen_t length = sizeof(client_addr);
 
-    std::cout << "等待客户端连接" << std::endl;
+    std::cout << "等待客户端连接\n";
     //成功返回非负描述符 出错返回-1
-    int conn = accept(server_sockfd, (struct sockaddr *)&clinet_addr, &length);
+    int conn = accept(server_sockfd, (struct sockaddr *)&client_addr, &length);
     if (conn < 0)
     {
         std::cerr << "connect";
         exit(1);
     }
-    std::cout << "客户端连接成功" << std::endl;
+    std::cout << "客户端连接成功\n";
 
     while (1)
     {
@@ -60,10 +60,10 @@ int main()
             std::cerr << "出现异常";
             break;
         }
-        std::cout << "来自客户端数据" << std::endl;
+        std::cout << "来自客户端数据\n";
         fwrite(buffer, len, 1, stdout);
         send(conn, buffer, len, 0);
-        std::cout << "发送给客户端数据" << std::endl;
+        std::cout << "发送给客户端数据\n";
         fwrite(buffer, len, 1, stdout);
     }
     close(conn);

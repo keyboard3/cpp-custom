@@ -20,7 +20,7 @@ int main()
     if (server_sockfd == -1)
     {
         perror("socket creation failed...\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
     printf("Socket successfully created..\n");
     //定义服务端的要绑定的IP地址和端口
@@ -37,7 +37,7 @@ int main()
     if (bind(server_sockfd, (SA *)&server_sockaddr, sizeof(server_sockaddr)) != 0)
     {
         perror("socket bind failed...\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
     //进入TCP状态图中的LISTEN状态，等待客户端发起TCP连接数据包。
@@ -46,7 +46,7 @@ int main()
     if (listen(server_sockfd, 5) != 0)
     {
         perror("Listen failed...\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
 
     struct sockaddr_in client_addr;
@@ -58,7 +58,7 @@ int main()
     if (conn_scokfd < 0)
     {
         perror("server acccept failed...\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
     printf("server acccept the client...\n");
 

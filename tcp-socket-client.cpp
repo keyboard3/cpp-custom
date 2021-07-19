@@ -29,7 +29,7 @@ int main()
     if (connect(client_sockfd, (SA *)&server_sockaddr, sizeof(server_sockaddr)) != 0)
     {
         printf("connection with the server failed...\n");
-        exit(0);
+        exit(EXIT_FAILURE);
     }
     //连接成功之后，客户端通过write函数向Socket文件中写数据
     printf("connected to the server..\n");

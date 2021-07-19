@@ -56,9 +56,10 @@ void communication(int sockfd)
         bzero(buff, sizeof(buff));
         //读出来自服务端的字符串消息
         read(sockfd, buff, sizeof(buff));
-        printf("From Server : %s", buff);
+        std::string fromServerStr = std::string(buff);
+        printf("From Server : %s", fromServerStr.c_str());
         //如果消息中包含exit就退出
-        if ((strncmp(buff, "exit", 4)) == 0)
+        if (fromServerStr.find("exit") != fromServerStr.npos)
         {
             printf("Client Exit...\n");
             break;

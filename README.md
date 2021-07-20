@@ -5,7 +5,8 @@
 - 简单 TCP 通信
     - [客户端 socket](./tcp-socket-client.cpp)
     - [服务端 socket](./tcp-socket-server.cpp)
-    - [服务端支持并发 socket：fork](./tcp-socket-server-fork.cpp)
+    - [服务端并发 socket：多进程](./tcp-socket-server-process.cpp)
+    - [服务端并发 socket：多线程](./tcp-socket-server-thread.cpp)
 - 简单 UDP 通信
     - [客户端 socket](./udp-socket-client.cpp)
     - [服务端 socket](./udp-socket-server.cpp)

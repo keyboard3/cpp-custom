@@ -9,6 +9,7 @@
 #define BUFFER_SIZE 1024
 #define SA struct sockaddr
 //实例来源 https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
+//C10K限制：一台机器要维护1万个连接，就要创建1万个进程或者线程，操作系统是无法承受的
 void communication(int sockfd);
 int main()
 {

@@ -4,7 +4,6 @@
 #include "unistd.h"
 #include "sys/socket.h"
 /**
- * 因为TCP socket的通信，往往伴随着业务逻辑。accept和recv每次只能阻塞IO，每次处理一个连接(单线程)，导致上层消费连接太慢。rps太低
  * select 系统调用可以用来监听多个连接的文件描述符。当内核通知进程其中有可以读连接数据了
  * 然后就可以扫描这些连接的 socket，找到那个可读的 socket。读取sk_buff到进程指定的buffer。
  * 进行逻辑处理，然后调用 select 重新监听文件描述符集合
@@ -86,6 +85,7 @@ int main()
                 max_sd = sd;
         }
 
+        //最高位的文件描述符，读事件集合，写事件的集合，异常事件的集合，等待时间
         //等待一个活跃变动的socket，因为timeout为null，所以会一直等待
         activity = select(max_sd + 1, &readfds, NULL, NULL, NULL);
         if ((activity < 0) && (errno != EINTR))

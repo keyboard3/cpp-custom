@@ -6,7 +6,9 @@
 #include "sys/event.h"
 #include "stdlib.h"
 #include "unistd.h"
-
+/**
+ * 因为TCP socket的通信，往往伴随着业务逻辑。recv阻塞IO，导致这个socket不处理完，不关闭就无法消费队列中的连接
+ */
 //案例来自 https://github.com/jilieryuyi/kqueue-simple
 
 #define PORT 8884
@@ -29,27 +31,27 @@ void loop_once(int efd, int lfd, int waitms);
 
 int main()
 {
-    int epollfd = kqueue();
-    exit_if(epollfd < 0, "epoll_create failed");
-    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    exit_if(listenfd < 0, "socket failed");
+    int kqueue_fd = kqueue();
+    exit_if(kqueue_fd < 0, "kqueue_create failed");
+    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    exit_if(listen_fd < 0, "socket failed");
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
     addr.sin_addr.s_addr = INADDR_ANY;
-    int r = bind(listenfd, (struct sockaddr *)&addr, sizeof(struct sockaddr));
+    int r = bind(listen_fd, (struct sockaddr *)&addr, sizeof(struct sockaddr));
     exit_if(r, "bind to 0.0.0:%d failed %d %s", PORT, errno, strerror(errno));
 
-    r = listen(listenfd, 20);
+    r = listen(listen_fd, 20);
     exit_if(r, "listen failed %d %s", errno, strerror(errno));
-    printf("fd %d listening at %d\n", listenfd, PORT);
-    setNoneBlock(listenfd);
-    updateEvents(epollfd, listenfd, kReadEvent, false);
+    printf("fd %d listening at %d\n", listen_fd, PORT);
+    setNoneBlock(listen_fd);
+    updateEvents(kqueue_fd, listen_fd, kReadEvent, false);
     while (1)
     { //实际应用应当注册信号处理函数，退出时清理资源
-        loop_once(epollfd, listenfd, 10000);
+        loop_once(kqueue_fd, listen_fd, 10000);
     }
     return 0;
 }

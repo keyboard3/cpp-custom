@@ -8,7 +8,6 @@
 #define MAX 80
 #define BUFFER_SIZE 1024
 #define SA struct sockaddr
-//因为TCP socket的通信，往往伴随着业务逻辑。accept和recv每次只能阻塞IO，每次处理一个连接(单线程)，导致上层消费连接太慢。rps太低
 //实例来源 https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
 void communication(int sockfd);
 int main()

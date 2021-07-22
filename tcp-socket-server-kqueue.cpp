@@ -6,9 +6,6 @@
 #include "sys/event.h"
 #include "stdlib.h"
 #include "unistd.h"
-/**
- * 因为TCP socket的通信，往往伴随着业务逻辑。recv阻塞IO，导致这个socket不处理完，不关闭就无法消费队列中的连接
- */
 //案例来自 https://github.com/jilieryuyi/kqueue-simple
 
 #define PORT 8884
@@ -50,7 +47,8 @@ int main()
     setNoneBlock(listen_fd);
     updateEvents(kqueue_fd, listen_fd, kReadEvent, false);
     while (1)
-    { //实际应用应当注册信号处理函数，退出时清理资源
+    {
+        //实际应用应当注册信号处理函数，退出时清理资源
         loop_once(kqueue_fd, listen_fd, 10000);
     }
     return 0;
@@ -63,10 +61,12 @@ void loop_once(int efd, int lfd, int waitms)
     timeout.tv_nsec = (waitms % 1000) * 1000 * 1000;
     const int kMaxEvents = 20;
     struct kevent activeEvs[kMaxEvents];
+    //获取变动过的事件列表。一个socket一个事件, 等待超过10秒就返回0
     int n = kevent(efd, NULL, 0, activeEvs, kMaxEvents, &timeout);
-    printf("epool_wait return %d\n", n);
+    printf("change events return %d\n", n);
     for (int i = 0; i < n; i++)
     {
+        //从事件中拿到socket文件
         int fd = (int)(intptr_t)activeEvs[i].udata;
         int events = activeEvs[i].filter;
         if (events == EVFILT_READ)
@@ -79,19 +79,19 @@ void loop_once(int efd, int lfd, int waitms)
                 handleRead(efd, fd);
         }
         else if (events == EVFILT_WRITE)
-            //如果连接向客户端写入数据
-            handleWrite(efd, fd);
+        {
+            //刚进入监听连接，此时状态为可写，kevent直接拿到该可写事件
+            //我们这里无处理逻辑，直接删除该监听事件
+            updateEvents(efd, fd, kReadEvent, true);
+        }
         else
             exit_if(1, "unknow event");
     }
 }
 
-void handleWrite(int efd, int fd)
-{
-    //实际应用应当实现可写时数据，无数据可写才关闭可写事件
-    updateEvents(efd, fd, kReadEvent, true);
-}
-
+/**
+ * 从可读的连接文件中读取内容，并直接将内容写入回去。沟通了直接关闭连接
+ **/
 void handleRead(int efd, int fd)
 {
     char buf[4096];
@@ -109,22 +109,30 @@ void handleRead(int efd, int fd)
     printf("fd %d closed\n", fd);
     close(fd);
 }
-
+/**
+ * 从监听的socketfd拿到连接的socketfd，监听它的读写事件
+ **/
 void handleAccept(int efd, int fd)
 {
     struct sockaddr_in raddr;
     socklen_t rsz = sizeof(raddr);
+    //从监听socket中拿到新的已完成握手的连接
     int cfd = accept(fd, (struct sockaddr *)&raddr, &rsz);
     exit_if(cfd < 0, "accept failed");
     sockaddr_in peer, local;
     socklen_t alen = sizeof(peer);
+    //检查连接是否已关闭
     int r = getpeername(cfd, (sockaddr *)&peer, &alen);
     exit_if(r < 0, "getpeername failed");
     printf("accpet a connection from %s\n", inet_ntoa(raddr.sin_addr));
+    //设置新的连接文件读取时是非阻塞IO
     setNoneBlock(cfd);
+    //向kqueue监听连接socket的可读可写事件
     updateEvents(efd, cfd, kReadEvent | kWriteEvent, false);
 }
-
+/**
+ * 向kqueue注册一个新的监听事件
+ **/
 void updateEvents(int efd, int fd, int events, bool modify)
 {
     struct kevent ev[2];
@@ -136,6 +144,7 @@ void updateEvents(int efd, int fd, int events, bool modify)
     }
     else if (modify)
     {
+        //删除对可读的监听事件
         EV_SET(&ev[n++], fd, EVFILT_READ, EV_DELETE, 0, 0, (void *)(intptr_t)fd);
     }
     if (events & kWriteEvent)
@@ -144,6 +153,7 @@ void updateEvents(int efd, int fd, int events, bool modify)
     }
     else if (modify)
     {
+        //删除对可写的监听事件
         EV_SET(&ev[n++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, (void *)(intptr_t)fd);
     }
     printf("%s fd %d events read %d write %d\n", modify ? "mod" : "add", fd, events & kReadEvent, events & kWriteEvent);

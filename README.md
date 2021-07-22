@@ -8,8 +8,8 @@
     - [服务端并发 socket：多进程](./tcp-socket-server-process.cpp)
     - [服务端并发 socket：多线程](./tcp-socket-server-thread.cpp)
     - [服务端并发 socket：select](./tcp-socket-server-select.cpp)
-    - [服务端并发 socket：epoll](./tcp-socket-server-epoll.cpp)
     - [服务端并发 socket：kqueue](./tcp-socket-server-kqueue.cpp)
+    - [服务端并发 socket：epoll](./tcp-socket-server-epoll.cpp)
     - 总结
         - TCP socket的通信，通信时长看业务逻辑。recv阻塞IO，导致这个socket不处理完，连接不关闭就无法消费队列中的其他连接
         - 因为在TCP不拥塞的情况下，假设业务层处理时间已经优化了，那么一个socket的响应时间是确定的。在等待网络IO时计算机资源理论上还可以处理其他连接的，这样就可以提高程序性能的吞吐量

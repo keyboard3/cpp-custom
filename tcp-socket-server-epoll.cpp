@@ -50,6 +50,7 @@ int main()
     socklen = sizeof(cli_addr);
     while (1)
     {
+        //变更的事件在events中
         nfds = epoll_wait(epfd, events, MAX_EVENTS, -1);
         for (int i = 0; i < nfds; i++)
         {
@@ -58,7 +59,7 @@ int main()
                 conn_sock = accept(listen_sock, (AF *)&cli_addr, &socklen);
                 inet_ntop(AF_INET, (char *)&(cli_addr.sin_addr), buf, sizeof(cli_addr));
                 printf("[+] connected with %s:%d\n", buf, ntohs(cli_addr.sin_port));
-
+                //获取到新的连接加入到epoll中
                 setnonblocking(conn_sock);
                 epoll_ctl_add(epfd, conn_sock, EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
             }
@@ -73,15 +74,18 @@ int main()
                     else
                     {
                         printf("[+] data: %s\n", buf);
+                        //将读取的数据写回到socket中
                         write(events[i].data.fd, buf, strlen(buf));
                     }
                 }
             }
             else
                 printf("[+] uexpected\n");
+            //socket 连接关闭
             if (events[i].events & (EPOLLRDHUP | EPOLLHUP))
             {
                 printf("[+] connection closed\n");
+                //从epoll中删除该socket的监听
                 epoll_ctl(epfd, EPOLL_CTL_DEL,
                           events[i].data.fd, NULL);
                 close(events[i].data.fd);
@@ -101,12 +105,16 @@ static void set_sockaddr(struct sockaddr_in *addr)
 
 static int setnonblocking(int sockfd)
 {
+    //设置文件描述符的IO操作为非阻塞模式
     int ret = fcntl(sockfd, F_SETFD, fcntl(sockfd, F_GETFD, 0) | O_NONBLOCK);
     if (ret == -1)
         return -1;
     return 0;
 }
 
+/**
+ * 将描述符的监听事件添加到epoll上 
+**/
 static void epoll_ctl_add(int epfd, int fd, uint32_t events)
 {
     struct epoll_event ev;

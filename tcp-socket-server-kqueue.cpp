@@ -23,7 +23,6 @@ void setNoneBlock(int fd);
 void updateEvents(int efd, int fd, int events, bool modify);
 void handleAccept(int efd, int fd);
 void handleRead(int efd, int fd);
-void handleWrite(int efd, int fd);
 void loop_once(int efd, int lfd, int waitms);
 
 int main()

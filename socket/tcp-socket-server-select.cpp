@@ -3,6 +3,8 @@
 #include "string"
 #include "unistd.h"
 #include "sys/socket.h"
+#include "errno.h"
+
 /**
  * select 系统调用可以用来监听多个连接的文件描述符。当内核通知进程其中有可以读连接数据了
  * 然后就可以扫描这些连接的 socket，找到那个可读的 socket。读取sk_buff到进程指定的buffer。

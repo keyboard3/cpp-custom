@@ -1,8 +1,20 @@
 # cpp-custom
 纯手撸一些c++实现
 
+## 运行
+例如 libuv
+```shell
+cd libuv && mkdir build && cd build
+cmake ..
+cmake --build .
+./hello
+```
+
+## 例子
 - [简单的栈机](./virtual-stack-machine.cpp)
 - [字节序验证](./endianness.cpp)
+- libuv
+    - 
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

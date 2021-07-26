@@ -32,4 +32,5 @@
 *.app
 
 .dist/*
+**/build/*
 .vscode

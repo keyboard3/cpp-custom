@@ -6,6 +6,7 @@
 #include "sys/event.h"
 #include "stdlib.h"
 #include "unistd.h"
+#include "errno.h"
 //案例来自 https://github.com/jilieryuyi/kqueue-simple
 
 #define PORT 8884

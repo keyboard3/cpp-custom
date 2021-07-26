@@ -13,3 +13,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # compile source
 add_executable(hello ./hello.cpp)
+add_executable(idle ./idle.cpp)
+add_executable(fs-cat ./fs-cat.cpp)

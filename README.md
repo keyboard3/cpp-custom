@@ -14,7 +14,8 @@ cmake --build .
 - [简单的栈机](./virtual-stack-machine.cpp)
 - [字节序验证](./endianness.cpp)
 - libuv
-    - 
+    - [读文件 cat](./libuv/fs-cat.cpp)
+    - [监听 idle](./libuv/idle.cpp)
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

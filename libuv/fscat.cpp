@@ -4,6 +4,7 @@
 #include "uv.h"
 //示例 http://docs.libuv.org/en/v1.x/guide/filesystem.html
 /**
+ * 执行: cd build && ./fscat ../fscat.cpp
  * libuv的文件操作不同于socket操作，socket操作的非阻塞行为是由操作系统提供的
  * 文件系统操作内部使用的是阻塞函数，但是应用向event loop注册事件通知，让线程池来调用回调
  **/

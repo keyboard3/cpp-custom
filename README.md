@@ -5,8 +5,7 @@
 例如 libuv
 ```shell
 cd libuv && mkdir build && cd build
-cmake ..
-cmake --build .
+cmake .. && cmake --build .
 ./hello
 ```
 
@@ -14,8 +13,10 @@ cmake --build .
 - [简单的栈机](./virtual-stack-machine.cpp)
 - [字节序验证](./endianness.cpp)
 - libuv
-    - [读文件 cat](./libuv/fs-cat.cpp)
     - [监听 idle](./libuv/idle.cpp)
+    - [读写文件 cat](./libuv/fscat.cpp)
+    - [文件流 tee](./libuv/fstee.cpp)
+    - [文件变动 onchange](./libuv/fsonchange.cpp)
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

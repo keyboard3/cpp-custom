@@ -12,6 +12,7 @@ cmake .. && cmake --build .
 ## 例子
 - [简单的栈机](./virtual-stack-machine.cpp)
 - [字节序验证](./endianness.cpp)
+- [JIT原型](./jit-proto.cpp)
 - libuv
     - [监听 idle](./libuv/idle.cpp)
     - [读写文件 cat](./libuv/fscat.cpp)

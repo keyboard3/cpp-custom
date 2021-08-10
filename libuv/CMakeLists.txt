@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.19)
 project(custom_libuv VERSION 1.0)
 
 include_directories(/usr/local/include)
-link_directories(/usr/local/Cellar/libuv/HEAD-bd7fcf1/lib)
+link_directories(/usr/local/Cellar/libuv//1.41.1/lib)
 link_libraries(uv)
 
 # specify the C++ standard
@@ -15,5 +15,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(hello ./hello.cpp)
 add_executable(idle ./idle.cpp)
 add_executable(fscat ./fscat.cpp)
-add_executable(fstee ./fstee.cpp)
-add_executable(fsonchange ./fsonchange.cpp)
+add_executable(tcpServer ./tcp-echo-server.cpp)
+add_executable(tcpClient ./tcp-echo-client.cpp)

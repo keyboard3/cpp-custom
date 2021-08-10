@@ -16,8 +16,6 @@ cmake .. && cmake --build .
 - libuv
     - [监听 idle](./libuv/idle.cpp)
     - [读写文件 cat](./libuv/fscat.cpp)
-    - [文件流 tee](./libuv/fstee.cpp)
-    - [文件变动 onchange](./libuv/fsonchange.cpp)
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

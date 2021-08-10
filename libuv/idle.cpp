@@ -18,11 +18,14 @@ int main()
 {
   uv_idle_t idler;
   //uv_default_loop是libuv提供的默认loop
+  //将handle插入loop->handle_queue队列的队尾
   uv_idle_init(uv_default_loop(), &idler);
+  //将handle插入loop->idle_handles队列中
+  //给handle->idle_cb=cb
   uv_idle_start(&idler, wait_for_a_while);
 
   printf("Idling...\n");
-  //因为有idle观察者，所以会被阻塞住。知道idle不是active的时候
+  //开始重复循环触发idle callback了
   uv_run(uv_default_loop(), UV_RUN_DEFAULT);
   printf("uv_loop_close\n");
   uv_loop_close(uv_default_loop());

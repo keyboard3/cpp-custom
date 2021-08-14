@@ -22,6 +22,7 @@ cmake .. && cmake --build .
     - [dns](./libuv/dns.cpp)
     - [网络 interfaces](./libuv/interfaces.cpp)
     - [ref timer](./libuv/ref-timer.cpp)
+    - [idle compute](./libuv/idle-compute.cpp)
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

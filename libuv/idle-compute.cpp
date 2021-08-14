@@ -1,6 +1,5 @@
 #include <stdio.h>
-
-#include <uv.h>
+#include "lib/uv.h"
 
 uv_loop_t *loop;
 uv_fs_t stdin_watcher;

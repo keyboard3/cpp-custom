@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <uv.h>
+#include "lib/uv.h"
 
 uv_loop_t *loop;
 uv_timer_t gc_req;

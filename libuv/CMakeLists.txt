@@ -6,6 +6,7 @@ project(custom_libuv VERSION 1.0)
 include_directories(./lib)
 link_directories(./lib)
 link_libraries(uv)
+link_libraries(curl)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -22,3 +23,4 @@ add_executable(dns ./dns.cpp)
 add_executable(interfaces ./interfaces.cpp)
 add_executable(timer ./ref-timer.cpp)
 add_executable(idleCompute ./idle-compute.cpp)
+add_executable(uvwget ./uvwget.cpp)

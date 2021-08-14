@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.19)
 # set the project name and version
 project(custom_libuv VERSION 1.0)
 
-include_directories(/usr/local/include)
-link_directories(/usr/local/Cellar/libuv//1.41.1/lib)
+include_directories(./lib)
+link_directories(./lib)
 link_libraries(uv)
 
 # specify the C++ standard

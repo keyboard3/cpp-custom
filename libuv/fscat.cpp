@@ -1,7 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "assert.h"
-#include "uv.h"
+#include "lib/uv.h"
 //示例 http://docs.libuv.org/en/v1.x/guide/filesystem.html
 /**
  * 执行: cd build && ./fscat ../fscat.cpp

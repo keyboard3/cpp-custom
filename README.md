@@ -26,6 +26,8 @@ cmake .. && cmake --build .
     - [plugin](./libuv/plugin.cpp)
     - [tty](./libuv/tty.cpp)
     - [tty Gravity](./libuv/tty-gravity.cpp)
+- skia
+    - [7角星](./skia/heptagram.cpp)
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

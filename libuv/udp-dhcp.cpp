@@ -1,7 +1,8 @@
 #include "stdlib.h"
 #include "string"
 #include "lib/uv.h"
-// libuv将系统底层在一个socket文件描述符上的监听，抽象分离出了两个handle,分开监听和发送两个操作
+//示例：http://docs.libuv.org/en/v1.x/guide/networking.html
+//libuv将系统底层在一个socket文件描述符上的监听，抽象分离出了两个handle,分开监听和发送两个操作
 uv_loop_t *loop;
 uv_udp_t send_socket;
 uv_udp_t recv_socket;
@@ -11,7 +12,8 @@ void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf);
 uv_buf_t make_discover_msg();
 void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf,
              const struct sockaddr *addr, unsigned flags);
-int main() {
+int main()
+{
   loop = uv_default_loop();
   // 0.0.0.0/(INADDR_ANY)好像是监听本机的所有网卡(有待验证)
   //接收socket绑定68端口(DHCP客户端)
@@ -46,9 +48,11 @@ int main() {
   return uv_run(loop, UV_RUN_DEFAULT);
 }
 void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf,
-             const struct sockaddr *addr, unsigned flags) {
+             const struct sockaddr *addr, unsigned flags)
+{
   // nread 0表示没有数据读取, <0表示读取出现异常
-  if (nread < 0) {
+  if (nread < 0)
+  {
     fprintf(stderr, "Read error %s\n", uv_err_name(nread));
     uv_close((uv_handle_t *)req, NULL);
     free(buf->base);
@@ -72,11 +76,13 @@ void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf,
   free(buf->base);
   uv_udp_recv_stop(req);
 }
-void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
+void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf)
+{
   buf->base = (char *)malloc(suggested_size);
   buf->len = suggested_size;
 };
-uv_buf_t make_discover_msg() {
+uv_buf_t make_discover_msg()
+{
   uv_buf_t buffer;
   alloc_buffer(NULL, 256, &buffer);
   memset(buffer.base, 0, buffer.len);
@@ -131,8 +137,10 @@ uv_buf_t make_discover_msg() {
   return buffer;
 }
 
-void on_send(uv_udp_send_t *req, int status) {
-  if (status) {
+void on_send(uv_udp_send_t *req, int status)
+{
+  if (status)
+  {
     fprintf(stderr, "Send error %s\n", uv_strerror(status));
     return;
   }

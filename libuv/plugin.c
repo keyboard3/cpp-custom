@@ -4,6 +4,7 @@
 #include <uv.h>
 #include "plugin/plugin.h"
 /**
+ * 示例：http://docs.libuv.org/en/v1.x/guide/utilities.html
  * libuv提供了跨平台动态加载共享库的api
  * 可以用来在Node.js层提供模块系统的扩展，通过require可以引入绑定
  * 记在第三方代码时要注意完整性和安全性检查

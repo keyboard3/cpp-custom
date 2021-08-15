@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "lib/uv.h"
-
+//示例：http://docs.libuv.org/en/v1.x/guide/networking.html
 int main() {
   char buf[512];
   uv_interface_address_t *info;

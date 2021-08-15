@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 
 /**
+ * 示例：http://docs.libuv.org/en/v1.x/guide/utilities.html
  * libuv: 我集成到了库文件中，免的直接安装
  * curl: 系统安装过，
  * 简单的下载管理，使用libcurl下载文件

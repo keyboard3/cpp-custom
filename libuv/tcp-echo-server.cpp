@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include "string"
 #include "lib/uv.h"
-
+//示例：http://docs.libuv.org/en/v1.x/guide/networking.html
 #define PORT 7000
 #define DEFAULT_BACKLOG 128
 uv_loop_t *loop;

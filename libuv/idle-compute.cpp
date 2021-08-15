@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "lib/uv.h"
-
+//示例：http://docs.libuv.org/en/v1.x/guide/utilities.html
 uv_loop_t *loop;
 uv_fs_t stdin_watcher;
 uv_idle_t idler;

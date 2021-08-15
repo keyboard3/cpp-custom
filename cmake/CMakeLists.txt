@@ -25,6 +25,7 @@ endif()
 # 添加可执行程序
 add_executable(Tutorial tutorial.cxx)
 
+# 指定链接给定目标 PUBLIC表示库和目标链接之后，成为接口一部分。PRIVAITE链接之后不是接口一部分。INTERFACE后面的库附加到链接接口，但不会链接到目标
 target_link_libraries(Tutorial PUBLIC ${EXTRA_LIBS})
 
 # 将binary dir添加到include files的搜索路径上，所以我们可以找到TutorialConfig.h

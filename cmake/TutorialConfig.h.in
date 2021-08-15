@@ -1,0 +1,6 @@
+// CMake的Tutorial项目的一些配置项
+// CMake在执行的时候会将@变量给替换掉
+#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@ //版本号 整数部分
+#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@ //版本号 小数部分
+// cmake执行时配置的可选项
+#cmakedefine USE_MYMATH

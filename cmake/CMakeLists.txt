@@ -3,9 +3,23 @@ cmake_minimum_required(VERSION 3.19)
 # 设置项目名和版本号
 project(Tutorial VERSION 1.0)
 
+# 让我们首先构建一个 INTERFACE 目标并指定所需的 C++ 标准级别 11，而不是使用 CMAKE_CXX_STANDARD。
+add_library(tutorial_compiler_flags INTERFACE)
+target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)
+
+# 通过BUILD_INTERFACE genex在构建项目时添加编译警告标志
+set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
+set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
+# 由于警告标志因编译器而异，使用COMPILE_LANG_AND_ID控制给定语言和一组编译器需要那些标志
+# 警告标志被封装在一个 BUILD_INTERFACE 条件中。这样做是为了我们已安装项目的使用者不会继承我们的警告标志。
+target_compile_options(tutorial_compiler_flags INTERFACE
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
+  "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
+)
+
 # 指定c++标准库11,确保CMAKE_CXX_STANDARD声明是在add_executable之上声明
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# set(CMAKE_CXX_STANDARD 11)
+# set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # 控制静态库和动态库构建的位置，以便在Windows上我们不需要修改运行可执行文件的路径
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")

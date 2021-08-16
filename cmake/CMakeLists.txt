@@ -45,7 +45,8 @@ install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
   )
 
 # 我们可以启用测试，然后添加一些基本测试来验证应用程序是否正常工作
-enable_testing()
+# 启用dashboard脚本 这个模块将会自动调用enable_testing()
+include(CTest)
 
 # 这个测试只是验证程序运行。没有段错误或其他方式崩溃，并且返回值为零。这是 CTest 测试的基本形式。
 add_test(NAME Runs COMMAND Tutorial 25)

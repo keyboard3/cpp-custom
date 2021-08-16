@@ -21,7 +21,7 @@ if(USE_MYMATH)
     COMMAND MakeTable ${CMAKE_CURRENT_BINARY_DIR}/Table.h
     DEPENDS MakeTable
   )
-  # 这个库制作sqrt,通过将生成的Table.h添加到库的源列表中让CMake知道mysqrt.cxx依赖与Table.h
+  # 这个库只做sqrt,通过将生成的Table.h添加到库的源列表中让CMake知道mysqrt.cxx依赖与Table.h
   add_library(SqrtLibrary STATIC 
               mysqrt.cxx ${CMAKE_CURRENT_BINARY_DIR}/Table.h
               )

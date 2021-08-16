@@ -7,26 +7,22 @@ project(Tutorial VERSION 1.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# 这个配置项将会在ui中显示出来，默认值是ON。可以被用户改变。改变结果会保存到缓存中，不用每次构建指定
-# 在terminal中必须手动指定 cmake .. -DUSE_MYMATH=OFF
-option(USE_MYMATH "Use tutorial provided math implementation" ON)
+# 控制静态库和动态库构建的位置，以便在Windows上我们不需要修改运行可执行文件的路径
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 # 配置头文件以及将CMake的设置传递给源代码
 configure_file(TutorialConfig.h.in TutorialConfig.h)
 
-# 当开启自定义的Math库
-if(USE_MYMATH)
-  # 添加MathFunctions库，以便构建这个库
-  add_subdirectory(MathFunctions)
-  # 添加MathFunctions到数组变量EXTRA_LIBS
-  list(APPEND EXTRA_LIBS MathFunctions)
-endif()
+# 添加依赖的库
+add_subdirectory(MathFunctions)
 
 # 添加可执行程序
 add_executable(Tutorial tutorial.cxx)
-
-# 指定链接给定目标 PUBLIC表示库和目标链接之后，成为接口一部分。PRIVAITE链接之后不是接口一部分。INTERFACE后面的库附加到链接接口，但不会链接到目标
-target_link_libraries(Tutorial PUBLIC ${EXTRA_LIBS})
+target_link_libraries(Tutorial PUBLIC MathFunctions)
 
 # 将binary dir添加到include files的搜索路径上，所以我们可以找到TutorialConfig.h
 target_include_directories(Tutorial PUBLIC

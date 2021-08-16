@@ -73,3 +73,15 @@ do_test(Tutorial -25 "-25 is [-nan|nan|0]")
 do_test(Tutorial 0.0001 "0.0001 is 0.01")
 # ctest -N 打印总数。ctest -VV打印过程日志。
 # 在Debug模式下运行测试: ctest -C Debug -VV
+
+# 这个模块将include这个项目在当前platform下的所有运行时库
+include(InstallRequiredSystemLibraries)
+# 这一些CPack变量存储项目的license以及版本信息
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${Tutorial_VERSION_MINOR}")
+# 它将使用这些变量和当前系统的一些其他属性来设置安装程序
+include(CPack)
+# cpack 生成二进制分发
+# cpack -G ZIP -C Debug -G指定生成器 -G指定多配置
+# cpack --config CPackSourceConfig.cmake 创建源代码分发

@@ -29,15 +29,22 @@ static JSContext *JS_NewCustomContext(JSRuntime *rt)
 
 int main(int argc, char **argv)
 {
+  //JSRuntime表示一个JavaScript运行时，它是一个object heap,多个runtime可以同时存在但是不能exchange object
+  //在一个runtime中不支持多线程
   JSRuntime *rt;
+  //JSContext表示一个JavaScript上下文(or Realm).每二个JSContext有自己的全局对象和系统对象
+  //每个JSRuntime可以有多个JSContext，且JSContext之间可以共享对象，类似于浏览器中同源frames共享JS对象
   JSContext *ctx;
+  
   rt = JS_NewRuntime();
   js_std_set_worker_new_context_func(JS_NewCustomContext);
   js_std_init_handlers(rt);
+
   ctx = JS_NewCustomContext(rt);
   js_std_add_helpers(ctx, argc, argv);
   js_std_eval_binary(ctx, qjsc_hello, qjsc_hello_size, 0);
   js_std_loop(ctx);
+
   JS_FreeContext(ctx);
   JS_FreeRuntime(rt);
   return 0;

@@ -30,6 +30,7 @@ cmake .. && cmake --build .
 - quickjs
     - [hello](./quickjs/hello.c): `打印'Hello World'`
     - [test_fib](./quickjs/test_fib.c): `在js代码导入c++模块`
+    - [test_timeout](./quickjs/test_fib.c): `在js代码支持os系统任务的调用，如timeout`
 - skia
     - [7角星](./skia/heptagram.cpp)
     - 结论：`发现如果是要绘制在窗口并交互，还是在skia源码下用ninja编译最合适，就不在这里折腾了。`

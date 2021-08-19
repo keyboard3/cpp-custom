@@ -81,7 +81,13 @@ int main(int argc, char **argv) {
   js_std_add_helpers(ctx, argc, argv);
   /* 解析运行quickjs的二进制指令代码 */
   js_std_eval_binary(ctx, qjsc_test_fib, qjsc_test_fib_size, 0);
-  /* 循环处理上面eval产生的job */
+  /*
+    先处理job_list，任务来自promise的resolve,reject，dynamic_import。
+    后处理os_poll_func, os_poll_func来自于初始化context时，调用js_init_module_os会设置os_poll_func。上面的JS_NewCustomContext没有调用
+    os_poll_func来自js_os_poll，只要os_rw_handlers,os_timers,port_list这些队列不会空就会执行其中的任务
+    poll里面的顺序是先处理timers，然后用select系统等待os_rw_handlers和port_list产生的文件描述符集合
+    然后loop过程循环往复的执行，没任务就退出了
+  */
   js_std_loop(ctx);
   /* 释放context和runtime占用的资源 */
   JS_FreeContext(ctx);

@@ -9,6 +9,7 @@ execute_process(
         COMMAND ./util/qjsc -ec -o hello.h  hello.js
         COMMAND ./util/qjsc -ec -o test_fib.h  test_fib.js
         COMMAND ./util/qjsc -ec -o test_timeout.h  test_timeout.js
+        COMMAND ./util/qjsc -ec -o test_libuv.h  test_libuv.js
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
 
@@ -18,6 +19,13 @@ add_library(quickjs STATIC IMPORTED)
 set_target_properties(quickjs
         PROPERTIES IMPORTED_LOCATION
         "/usr/local/lib/quickjs/libquickjs.a")
+link_libraries(quickjs)
+# 添加libuv库
+add_library(uv STATIC IMPORTED)
+set_target_properties(uv
+                PROPERTIES IMPORTED_LOCATION
+                "/usr/local/lib/libuv.a")
+
 # 设置fib库是否动态加载还是预加载
 set(JS_FIB_DYNAMIC_LOAD ON)
 # 配置头文件以及将CMake的设置传递给源代码
@@ -29,9 +37,10 @@ add_executable(hello hello.c)
 # 因为test_fib.c中有引用到./examples/fib.c的函数定义，所以引入依赖fib.c
 add_executable(test_fib test_fib.c ./fib/fib.c)
 add_executable(test_timeout test_timeout.c)
+add_executable(test_libuv test_libuv.c)
 
 # 将库链接到指定的目标（这个目标一定是add_executable() or add_library()创建的）
-target_link_libraries(hello quickjs)
-target_link_libraries(test_fib quickjs)
-target_link_libraries(test_timeout quickjs)
-
+target_link_libraries(hello)
+target_link_libraries(test_fib)
+target_link_libraries(test_timeout)
+target_link_libraries(test_libuv uv)

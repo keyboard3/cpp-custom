@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 project(QuickjsDemo)
+
 # 当前程序的include路径
 include_directories(/usr/local/include "${PROJECT_BINARY_DIR}" ${CMAKE_CURRENT_SOURCE_DIR})
 

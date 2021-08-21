@@ -1,0 +1,867 @@
+cxx = clang++
+ar = ar
+ld = clang++
+
+rule regen
+  command = /System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python ../build/gen.py
+  description = Regenerating ninja files
+
+build build.ninja: regen
+  generator = 1
+  depfile = build.ninja.d
+rule cxx
+  command = $cxx -MMD -MF $out.d $includes $cflags -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  deps = gcc
+
+rule alink_thin
+  command = rm -f $out && $ar rcs $out $in
+  description = AR $out
+
+rule link
+  command = $ld $ldflags -o $out $in $solibs $libs
+  description = LINK $out
+build src/base/command_line.o: cxx ../src/base/command_line.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/environment.o: cxx ../src/base/environment.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file.o: cxx ../src/base/files/file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_enumerator.o: cxx ../src/base/files/file_enumerator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_path.o: cxx ../src/base/files/file_path.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_path_constants.o: cxx ../src/base/files/file_path_constants.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_util.o: cxx ../src/base/files/file_util.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/scoped_file.o: cxx ../src/base/files/scoped_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/scoped_temp_dir.o: cxx ../src/base/files/scoped_temp_dir.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/json/json_parser.o: cxx ../src/base/json/json_parser.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/json/json_reader.o: cxx ../src/base/json/json_reader.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/json/json_writer.o: cxx ../src/base/json/json_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/json/string_escape.o: cxx ../src/base/json/string_escape.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/logging.o: cxx ../src/base/logging.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/md5.o: cxx ../src/base/md5.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/memory/ref_counted.o: cxx ../src/base/memory/ref_counted.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/memory/weak_ptr.o: cxx ../src/base/memory/weak_ptr.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/sha1.o: cxx ../src/base/sha1.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/string_number_conversions.o: cxx ../src/base/strings/string_number_conversions.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/string_split.o: cxx ../src/base/strings/string_split.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/string_util.o: cxx ../src/base/strings/string_util.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/string_util_constants.o: cxx ../src/base/strings/string_util_constants.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/stringprintf.o: cxx ../src/base/strings/stringprintf.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/utf_string_conversion_utils.o: cxx ../src/base/strings/utf_string_conversion_utils.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/strings/utf_string_conversions.o: cxx ../src/base/strings/utf_string_conversions.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/third_party/icu/icu_utf.o: cxx ../src/base/third_party/icu/icu_utf.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/timer/elapsed_timer.o: cxx ../src/base/timer/elapsed_timer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/value_iterators.o: cxx ../src/base/value_iterators.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/values.o: cxx ../src/base/values.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_enumerator_posix.o: cxx ../src/base/files/file_enumerator_posix.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_posix.o: cxx ../src/base/files/file_posix.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/files/file_util_posix.o: cxx ../src/base/files/file_util_posix.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/posix/file_descriptor_shuffle.o: cxx ../src/base/posix/file_descriptor_shuffle.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/base/posix/safe_strerror.o: cxx ../src/base/posix/safe_strerror.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build base.a: alink_thin src/base/command_line.o src/base/environment.o src/base/files/file.o src/base/files/file_enumerator.o src/base/files/file_path.o src/base/files/file_path_constants.o src/base/files/file_util.o src/base/files/scoped_file.o src/base/files/scoped_temp_dir.o src/base/json/json_parser.o src/base/json/json_reader.o src/base/json/json_writer.o src/base/json/string_escape.o src/base/logging.o src/base/md5.o src/base/memory/ref_counted.o src/base/memory/weak_ptr.o src/base/sha1.o src/base/strings/string_number_conversions.o src/base/strings/string_split.o src/base/strings/string_util.o src/base/strings/string_util_constants.o src/base/strings/stringprintf.o src/base/strings/utf_string_conversion_utils.o src/base/strings/utf_string_conversions.o src/base/third_party/icu/icu_utf.o src/base/timer/elapsed_timer.o src/base/value_iterators.o src/base/values.o src/base/files/file_enumerator_posix.o src/base/files/file_posix.o src/base/files/file_util_posix.o src/base/posix/file_descriptor_shuffle.o src/base/posix/safe_strerror.o
+  libflags = 
+build src/gn/action_target_generator.o: cxx ../src/gn/action_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/action_values.o: cxx ../src/gn/action_values.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/analyzer.o: cxx ../src/gn/analyzer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/args.o: cxx ../src/gn/args.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/binary_target_generator.o: cxx ../src/gn/binary_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/build_settings.o: cxx ../src/gn/build_settings.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/builder.o: cxx ../src/gn/builder.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/builder_record.o: cxx ../src/gn/builder_record.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/bundle_data.o: cxx ../src/gn/bundle_data.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/bundle_data_target_generator.o: cxx ../src/gn/bundle_data_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/bundle_file_rule.o: cxx ../src/gn/bundle_file_rule.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/c_include_iterator.o: cxx ../src/gn/c_include_iterator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/c_substitution_type.o: cxx ../src/gn/c_substitution_type.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/c_tool.o: cxx ../src/gn/c_tool.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_analyze.o: cxx ../src/gn/command_analyze.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_args.o: cxx ../src/gn/command_args.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_check.o: cxx ../src/gn/command_check.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_clean.o: cxx ../src/gn/command_clean.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_clean_stale.o: cxx ../src/gn/command_clean_stale.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_desc.o: cxx ../src/gn/command_desc.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_format.o: cxx ../src/gn/command_format.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_gen.o: cxx ../src/gn/command_gen.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_help.o: cxx ../src/gn/command_help.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_ls.o: cxx ../src/gn/command_ls.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_meta.o: cxx ../src/gn/command_meta.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_outputs.o: cxx ../src/gn/command_outputs.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_path.o: cxx ../src/gn/command_path.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_refs.o: cxx ../src/gn/command_refs.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/commands.o: cxx ../src/gn/commands.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/compile_commands_writer.o: cxx ../src/gn/compile_commands_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_project_writer.o: cxx ../src/gn/rust_project_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/config.o: cxx ../src/gn/config.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/config_values.o: cxx ../src/gn/config_values.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/config_values_extractors.o: cxx ../src/gn/config_values_extractors.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/config_values_generator.o: cxx ../src/gn/config_values_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/copy_target_generator.o: cxx ../src/gn/copy_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/create_bundle_target_generator.o: cxx ../src/gn/create_bundle_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/deps_iterator.o: cxx ../src/gn/deps_iterator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/desc_builder.o: cxx ../src/gn/desc_builder.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/eclipse_writer.o: cxx ../src/gn/eclipse_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/err.o: cxx ../src/gn/err.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/escape.o: cxx ../src/gn/escape.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/exec_process.o: cxx ../src/gn/exec_process.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/filesystem_utils.o: cxx ../src/gn/filesystem_utils.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/file_writer.o: cxx ../src/gn/file_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/frameworks_utils.o: cxx ../src/gn/frameworks_utils.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_exec_script.o: cxx ../src/gn/function_exec_script.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_filter.o: cxx ../src/gn/function_filter.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_foreach.o: cxx ../src/gn/function_foreach.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_forward_variables_from.o: cxx ../src/gn/function_forward_variables_from.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_get_label_info.o: cxx ../src/gn/function_get_label_info.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_get_path_info.o: cxx ../src/gn/function_get_path_info.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_get_target_outputs.o: cxx ../src/gn/function_get_target_outputs.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_process_file_template.o: cxx ../src/gn/function_process_file_template.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_read_file.o: cxx ../src/gn/function_read_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_rebase_path.o: cxx ../src/gn/function_rebase_path.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_set_default_toolchain.o: cxx ../src/gn/function_set_default_toolchain.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_set_defaults.o: cxx ../src/gn/function_set_defaults.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_template.o: cxx ../src/gn/function_template.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_toolchain.o: cxx ../src/gn/function_toolchain.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_write_file.o: cxx ../src/gn/function_write_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/functions.o: cxx ../src/gn/functions.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/functions_target.o: cxx ../src/gn/functions_target.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/general_tool.o: cxx ../src/gn/general_tool.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/generated_file_target_generator.o: cxx ../src/gn/generated_file_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/group_target_generator.o: cxx ../src/gn/group_target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/header_checker.o: cxx ../src/gn/header_checker.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/import_manager.o: cxx ../src/gn/import_manager.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/inherited_libraries.o: cxx ../src/gn/inherited_libraries.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/input_conversion.o: cxx ../src/gn/input_conversion.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/input_file.o: cxx ../src/gn/input_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/input_file_manager.o: cxx ../src/gn/input_file_manager.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/item.o: cxx ../src/gn/item.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/json_project_writer.o: cxx ../src/gn/json_project_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/label.o: cxx ../src/gn/label.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/label_pattern.o: cxx ../src/gn/label_pattern.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/lib_file.o: cxx ../src/gn/lib_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/loader.o: cxx ../src/gn/loader.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/location.o: cxx ../src/gn/location.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/metadata.o: cxx ../src/gn/metadata.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/metadata_walk.o: cxx ../src/gn/metadata_walk.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_action_target_writer.o: cxx ../src/gn/ninja_action_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_binary_target_writer.o: cxx ../src/gn/ninja_binary_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_build_writer.o: cxx ../src/gn/ninja_build_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_bundle_data_target_writer.o: cxx ../src/gn/ninja_bundle_data_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_c_binary_target_writer.o: cxx ../src/gn/ninja_c_binary_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_copy_target_writer.o: cxx ../src/gn/ninja_copy_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_create_bundle_target_writer.o: cxx ../src/gn/ninja_create_bundle_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_generated_file_target_writer.o: cxx ../src/gn/ninja_generated_file_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_group_target_writer.o: cxx ../src/gn/ninja_group_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_rust_binary_target_writer.o: cxx ../src/gn/ninja_rust_binary_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_target_command_util.o: cxx ../src/gn/ninja_target_command_util.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_target_writer.o: cxx ../src/gn/ninja_target_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_toolchain_writer.o: cxx ../src/gn/ninja_toolchain_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_tools.o: cxx ../src/gn/ninja_tools.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_utils.o: cxx ../src/gn/ninja_utils.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_writer.o: cxx ../src/gn/ninja_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/operators.o: cxx ../src/gn/operators.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/output_conversion.o: cxx ../src/gn/output_conversion.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/output_file.o: cxx ../src/gn/output_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/parse_node_value_adapter.o: cxx ../src/gn/parse_node_value_adapter.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/parse_tree.o: cxx ../src/gn/parse_tree.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/parser.o: cxx ../src/gn/parser.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/path_output.o: cxx ../src/gn/path_output.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/pattern.o: cxx ../src/gn/pattern.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/pool.o: cxx ../src/gn/pool.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/qt_creator_writer.o: cxx ../src/gn/qt_creator_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/runtime_deps.o: cxx ../src/gn/runtime_deps.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_substitution_type.o: cxx ../src/gn/rust_substitution_type.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_tool.o: cxx ../src/gn/rust_tool.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_values.o: cxx ../src/gn/rust_values.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_values_generator.o: cxx ../src/gn/rust_values_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_variables.o: cxx ../src/gn/rust_variables.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/scheduler.o: cxx ../src/gn/scheduler.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/scope.o: cxx ../src/gn/scope.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/scope_per_file_provider.o: cxx ../src/gn/scope_per_file_provider.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/settings.o: cxx ../src/gn/settings.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/setup.o: cxx ../src/gn/setup.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/source_dir.o: cxx ../src/gn/source_dir.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/source_file.o: cxx ../src/gn/source_file.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/standard_out.o: cxx ../src/gn/standard_out.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/string_atom.o: cxx ../src/gn/string_atom.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/string_output_buffer.o: cxx ../src/gn/string_output_buffer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/string_utils.o: cxx ../src/gn/string_utils.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/substitution_list.o: cxx ../src/gn/substitution_list.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/substitution_pattern.o: cxx ../src/gn/substitution_pattern.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/substitution_type.o: cxx ../src/gn/substitution_type.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/substitution_writer.o: cxx ../src/gn/substitution_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/swift_values.o: cxx ../src/gn/swift_values.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/swift_values_generator.o: cxx ../src/gn/swift_values_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/swift_variables.o: cxx ../src/gn/swift_variables.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/switches.o: cxx ../src/gn/switches.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/target.o: cxx ../src/gn/target.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/target_generator.o: cxx ../src/gn/target_generator.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/template.o: cxx ../src/gn/template.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/token.o: cxx ../src/gn/token.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/tokenizer.o: cxx ../src/gn/tokenizer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/tool.o: cxx ../src/gn/tool.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/toolchain.o: cxx ../src/gn/toolchain.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/trace.o: cxx ../src/gn/trace.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/value.o: cxx ../src/gn/value.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/value_extractors.o: cxx ../src/gn/value_extractors.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/variables.o: cxx ../src/gn/variables.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/version.o: cxx ../src/gn/version.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/visibility.o: cxx ../src/gn/visibility.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/visual_studio_utils.o: cxx ../src/gn/visual_studio_utils.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/visual_studio_writer.o: cxx ../src/gn/visual_studio_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/xcode_object.o: cxx ../src/gn/xcode_object.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/xcode_writer.o: cxx ../src/gn/xcode_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/xml_element_writer.o: cxx ../src/gn/xml_element_writer.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/exe_path.o: cxx ../src/util/exe_path.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/msg_loop.o: cxx ../src/util/msg_loop.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/semaphore.o: cxx ../src/util/semaphore.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/sys_info.o: cxx ../src/util/sys_info.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/ticks.o: cxx ../src/util/ticks.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/worker_pool.o: cxx ../src/util/worker_pool.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build gn_lib.a: alink_thin src/gn/action_target_generator.o src/gn/action_values.o src/gn/analyzer.o src/gn/args.o src/gn/binary_target_generator.o src/gn/build_settings.o src/gn/builder.o src/gn/builder_record.o src/gn/bundle_data.o src/gn/bundle_data_target_generator.o src/gn/bundle_file_rule.o src/gn/c_include_iterator.o src/gn/c_substitution_type.o src/gn/c_tool.o src/gn/command_analyze.o src/gn/command_args.o src/gn/command_check.o src/gn/command_clean.o src/gn/command_clean_stale.o src/gn/command_desc.o src/gn/command_format.o src/gn/command_gen.o src/gn/command_help.o src/gn/command_ls.o src/gn/command_meta.o src/gn/command_outputs.o src/gn/command_path.o src/gn/command_refs.o src/gn/commands.o src/gn/compile_commands_writer.o src/gn/rust_project_writer.o src/gn/config.o src/gn/config_values.o src/gn/config_values_extractors.o src/gn/config_values_generator.o src/gn/copy_target_generator.o src/gn/create_bundle_target_generator.o src/gn/deps_iterator.o src/gn/desc_builder.o src/gn/eclipse_writer.o src/gn/err.o src/gn/escape.o src/gn/exec_process.o src/gn/filesystem_utils.o src/gn/file_writer.o src/gn/frameworks_utils.o src/gn/function_exec_script.o src/gn/function_filter.o src/gn/function_foreach.o src/gn/function_forward_variables_from.o src/gn/function_get_label_info.o src/gn/function_get_path_info.o src/gn/function_get_target_outputs.o src/gn/function_process_file_template.o src/gn/function_read_file.o src/gn/function_rebase_path.o src/gn/function_set_default_toolchain.o src/gn/function_set_defaults.o src/gn/function_template.o src/gn/function_toolchain.o src/gn/function_write_file.o src/gn/functions.o src/gn/functions_target.o src/gn/general_tool.o src/gn/generated_file_target_generator.o src/gn/group_target_generator.o src/gn/header_checker.o src/gn/import_manager.o src/gn/inherited_libraries.o src/gn/input_conversion.o src/gn/input_file.o src/gn/input_file_manager.o src/gn/item.o src/gn/json_project_writer.o src/gn/label.o src/gn/label_pattern.o src/gn/lib_file.o src/gn/loader.o src/gn/location.o src/gn/metadata.o src/gn/metadata_walk.o src/gn/ninja_action_target_writer.o src/gn/ninja_binary_target_writer.o src/gn/ninja_build_writer.o src/gn/ninja_bundle_data_target_writer.o src/gn/ninja_c_binary_target_writer.o src/gn/ninja_copy_target_writer.o src/gn/ninja_create_bundle_target_writer.o src/gn/ninja_generated_file_target_writer.o src/gn/ninja_group_target_writer.o src/gn/ninja_rust_binary_target_writer.o src/gn/ninja_target_command_util.o src/gn/ninja_target_writer.o src/gn/ninja_toolchain_writer.o src/gn/ninja_tools.o src/gn/ninja_utils.o src/gn/ninja_writer.o src/gn/operators.o src/gn/output_conversion.o src/gn/output_file.o src/gn/parse_node_value_adapter.o src/gn/parse_tree.o src/gn/parser.o src/gn/path_output.o src/gn/pattern.o src/gn/pool.o src/gn/qt_creator_writer.o src/gn/runtime_deps.o src/gn/rust_substitution_type.o src/gn/rust_tool.o src/gn/rust_values.o src/gn/rust_values_generator.o src/gn/rust_variables.o src/gn/scheduler.o src/gn/scope.o src/gn/scope_per_file_provider.o src/gn/settings.o src/gn/setup.o src/gn/source_dir.o src/gn/source_file.o src/gn/standard_out.o src/gn/string_atom.o src/gn/string_output_buffer.o src/gn/string_utils.o src/gn/substitution_list.o src/gn/substitution_pattern.o src/gn/substitution_type.o src/gn/substitution_writer.o src/gn/swift_values.o src/gn/swift_values_generator.o src/gn/swift_variables.o src/gn/switches.o src/gn/target.o src/gn/target_generator.o src/gn/template.o src/gn/token.o src/gn/tokenizer.o src/gn/tool.o src/gn/toolchain.o src/gn/trace.o src/gn/value.o src/gn/value_extractors.o src/gn/variables.o src/gn/version.o src/gn/visibility.o src/gn/visual_studio_utils.o src/gn/visual_studio_writer.o src/gn/xcode_object.o src/gn/xcode_writer.o src/gn/xml_element_writer.o src/util/exe_path.o src/util/msg_loop.o src/util/semaphore.o src/util/sys_info.o src/util/ticks.o src/util/worker_pool.o
+  libflags = 
+build src/gn/gn_main.o: cxx ../src/gn/gn_main.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build gn: link src/gn/gn_main.o | base.a gn_lib.a
+  ldflags = -O3 -fdata-sections -ffunction-sections -Wl,-dead_strip -Wl,-S -mmacosx-version-min=10.9 -pthread
+  solibs = 
+  libs = base.a gn_lib.a
+build src/gn/action_target_generator_unittest.o: cxx ../src/gn/action_target_generator_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/analyzer_unittest.o: cxx ../src/gn/analyzer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/args_unittest.o: cxx ../src/gn/args_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/builder_unittest.o: cxx ../src/gn/builder_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/c_include_iterator_unittest.o: cxx ../src/gn/c_include_iterator_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/command_format_unittest.o: cxx ../src/gn/command_format_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/commands_unittest.o: cxx ../src/gn/commands_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/compile_commands_writer_unittest.o: cxx ../src/gn/compile_commands_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/config_unittest.o: cxx ../src/gn/config_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/config_values_extractors_unittest.o: cxx ../src/gn/config_values_extractors_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/escape_unittest.o: cxx ../src/gn/escape_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/exec_process_unittest.o: cxx ../src/gn/exec_process_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/filesystem_utils_unittest.o: cxx ../src/gn/filesystem_utils_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/file_writer_unittest.o: cxx ../src/gn/file_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/frameworks_utils_unittest.o: cxx ../src/gn/frameworks_utils_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_filter_unittest.o: cxx ../src/gn/function_filter_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_foreach_unittest.o: cxx ../src/gn/function_foreach_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_forward_variables_from_unittest.o: cxx ../src/gn/function_forward_variables_from_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_get_label_info_unittest.o: cxx ../src/gn/function_get_label_info_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_get_path_info_unittest.o: cxx ../src/gn/function_get_path_info_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_get_target_outputs_unittest.o: cxx ../src/gn/function_get_target_outputs_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_process_file_template_unittest.o: cxx ../src/gn/function_process_file_template_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_rebase_path_unittest.o: cxx ../src/gn/function_rebase_path_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_template_unittest.o: cxx ../src/gn/function_template_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_toolchain_unittest.o: cxx ../src/gn/function_toolchain_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/function_write_file_unittest.o: cxx ../src/gn/function_write_file_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/functions_target_rust_unittest.o: cxx ../src/gn/functions_target_rust_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/functions_target_unittest.o: cxx ../src/gn/functions_target_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/functions_unittest.o: cxx ../src/gn/functions_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/hash_table_base_unittest.o: cxx ../src/gn/hash_table_base_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/header_checker_unittest.o: cxx ../src/gn/header_checker_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/inherited_libraries_unittest.o: cxx ../src/gn/inherited_libraries_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/input_conversion_unittest.o: cxx ../src/gn/input_conversion_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/json_project_writer_unittest.o: cxx ../src/gn/json_project_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_project_writer_unittest.o: cxx ../src/gn/rust_project_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/rust_project_writer_helpers_unittest.o: cxx ../src/gn/rust_project_writer_helpers_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/label_pattern_unittest.o: cxx ../src/gn/label_pattern_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/label_unittest.o: cxx ../src/gn/label_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/loader_unittest.o: cxx ../src/gn/loader_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/metadata_unittest.o: cxx ../src/gn/metadata_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/metadata_walk_unittest.o: cxx ../src/gn/metadata_walk_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_action_target_writer_unittest.o: cxx ../src/gn/ninja_action_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_binary_target_writer_unittest.o: cxx ../src/gn/ninja_binary_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_build_writer_unittest.o: cxx ../src/gn/ninja_build_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_bundle_data_target_writer_unittest.o: cxx ../src/gn/ninja_bundle_data_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_c_binary_target_writer_unittest.o: cxx ../src/gn/ninja_c_binary_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_copy_target_writer_unittest.o: cxx ../src/gn/ninja_copy_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_create_bundle_target_writer_unittest.o: cxx ../src/gn/ninja_create_bundle_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_generated_file_target_writer_unittest.o: cxx ../src/gn/ninja_generated_file_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_group_target_writer_unittest.o: cxx ../src/gn/ninja_group_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_rust_binary_target_writer_unittest.o: cxx ../src/gn/ninja_rust_binary_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_target_command_util_unittest.o: cxx ../src/gn/ninja_target_command_util_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_target_writer_unittest.o: cxx ../src/gn/ninja_target_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/ninja_toolchain_writer_unittest.o: cxx ../src/gn/ninja_toolchain_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/operators_unittest.o: cxx ../src/gn/operators_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/output_conversion_unittest.o: cxx ../src/gn/output_conversion_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/parse_tree_unittest.o: cxx ../src/gn/parse_tree_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/parser_unittest.o: cxx ../src/gn/parser_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/path_output_unittest.o: cxx ../src/gn/path_output_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/pattern_unittest.o: cxx ../src/gn/pattern_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/runtime_deps_unittest.o: cxx ../src/gn/runtime_deps_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/scope_per_file_provider_unittest.o: cxx ../src/gn/scope_per_file_provider_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/scope_unittest.o: cxx ../src/gn/scope_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/setup_unittest.o: cxx ../src/gn/setup_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/source_dir_unittest.o: cxx ../src/gn/source_dir_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/source_file_unittest.o: cxx ../src/gn/source_file_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/string_atom_unittest.o: cxx ../src/gn/string_atom_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/string_output_buffer_unittest.o: cxx ../src/gn/string_output_buffer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/string_utils_unittest.o: cxx ../src/gn/string_utils_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/substitution_pattern_unittest.o: cxx ../src/gn/substitution_pattern_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/substitution_writer_unittest.o: cxx ../src/gn/substitution_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/target_unittest.o: cxx ../src/gn/target_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/template_unittest.o: cxx ../src/gn/template_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/test_with_scheduler.o: cxx ../src/gn/test_with_scheduler.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/test_with_scope.o: cxx ../src/gn/test_with_scope.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/tokenizer_unittest.o: cxx ../src/gn/tokenizer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/unique_vector_unittest.o: cxx ../src/gn/unique_vector_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/value_unittest.o: cxx ../src/gn/value_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/vector_utils_unittest.o: cxx ../src/gn/vector_utils_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/version_unittest.o: cxx ../src/gn/version_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/visibility_unittest.o: cxx ../src/gn/visibility_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/visual_studio_utils_unittest.o: cxx ../src/gn/visual_studio_utils_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/visual_studio_writer_unittest.o: cxx ../src/gn/visual_studio_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/xcode_object_unittest.o: cxx ../src/gn/xcode_object_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/gn/xml_element_writer_unittest.o: cxx ../src/gn/xml_element_writer_unittest.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build src/util/test/gn_test.o: cxx ../src/util/test/gn_test.cc
+  includes = -I../src -I.
+  cflags = -DNDEBUG -O3 -fdata-sections -ffunction-sections -D_FILE_OFFSET_BITS=64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -pthread -pipe -fno-exceptions -fno-rtti -fdiagnostics-color -Wall -Wextra -Wno-unused-parameter -std=c++17 -mmacosx-version-min=10.9
+build gn_unittests: link src/gn/action_target_generator_unittest.o src/gn/analyzer_unittest.o src/gn/args_unittest.o src/gn/builder_unittest.o src/gn/c_include_iterator_unittest.o src/gn/command_format_unittest.o src/gn/commands_unittest.o src/gn/compile_commands_writer_unittest.o src/gn/config_unittest.o src/gn/config_values_extractors_unittest.o src/gn/escape_unittest.o src/gn/exec_process_unittest.o src/gn/filesystem_utils_unittest.o src/gn/file_writer_unittest.o src/gn/frameworks_utils_unittest.o src/gn/function_filter_unittest.o src/gn/function_foreach_unittest.o src/gn/function_forward_variables_from_unittest.o src/gn/function_get_label_info_unittest.o src/gn/function_get_path_info_unittest.o src/gn/function_get_target_outputs_unittest.o src/gn/function_process_file_template_unittest.o src/gn/function_rebase_path_unittest.o src/gn/function_template_unittest.o src/gn/function_toolchain_unittest.o src/gn/function_write_file_unittest.o src/gn/functions_target_rust_unittest.o src/gn/functions_target_unittest.o src/gn/functions_unittest.o src/gn/hash_table_base_unittest.o src/gn/header_checker_unittest.o src/gn/inherited_libraries_unittest.o src/gn/input_conversion_unittest.o src/gn/json_project_writer_unittest.o src/gn/rust_project_writer_unittest.o src/gn/rust_project_writer_helpers_unittest.o src/gn/label_pattern_unittest.o src/gn/label_unittest.o src/gn/loader_unittest.o src/gn/metadata_unittest.o src/gn/metadata_walk_unittest.o src/gn/ninja_action_target_writer_unittest.o src/gn/ninja_binary_target_writer_unittest.o src/gn/ninja_build_writer_unittest.o src/gn/ninja_bundle_data_target_writer_unittest.o src/gn/ninja_c_binary_target_writer_unittest.o src/gn/ninja_copy_target_writer_unittest.o src/gn/ninja_create_bundle_target_writer_unittest.o src/gn/ninja_generated_file_target_writer_unittest.o src/gn/ninja_group_target_writer_unittest.o src/gn/ninja_rust_binary_target_writer_unittest.o src/gn/ninja_target_command_util_unittest.o src/gn/ninja_target_writer_unittest.o src/gn/ninja_toolchain_writer_unittest.o src/gn/operators_unittest.o src/gn/output_conversion_unittest.o src/gn/parse_tree_unittest.o src/gn/parser_unittest.o src/gn/path_output_unittest.o src/gn/pattern_unittest.o src/gn/runtime_deps_unittest.o src/gn/scope_per_file_provider_unittest.o src/gn/scope_unittest.o src/gn/setup_unittest.o src/gn/source_dir_unittest.o src/gn/source_file_unittest.o src/gn/string_atom_unittest.o src/gn/string_output_buffer_unittest.o src/gn/string_utils_unittest.o src/gn/substitution_pattern_unittest.o src/gn/substitution_writer_unittest.o src/gn/target_unittest.o src/gn/template_unittest.o src/gn/test_with_scheduler.o src/gn/test_with_scope.o src/gn/tokenizer_unittest.o src/gn/unique_vector_unittest.o src/gn/value_unittest.o src/gn/vector_utils_unittest.o src/gn/version_unittest.o src/gn/visibility_unittest.o src/gn/visual_studio_utils_unittest.o src/gn/visual_studio_writer_unittest.o src/gn/xcode_object_unittest.o src/gn/xml_element_writer_unittest.o src/util/test/gn_test.o | base.a gn_lib.a
+  ldflags = -O3 -fdata-sections -ffunction-sections -Wl,-dead_strip -Wl,-S -mmacosx-version-min=10.9 -pthread
+  solibs = 
+  libs = base.a gn_lib.a

@@ -13,7 +13,8 @@ cmake .. && cmake --build .
 - [简单的栈机](./virtual-stack-machine.cpp)
 - [字节序验证](./endianness.cpp)
 - [JIT原型](./jit-proto.cpp)
-- [cmake step1 - step10](./cmake)
+- [cmake step1 - step10](./cmake): `元构建系统cmake演变至step10的示例`
+- [gn simple example](./gn_example): `元构建系统gn构建示例`
 - libuv
     - [idle](./libuv/idle.cpp): `libuv空闲时回调`
     - [cat](./libuv/fscat.cpp): `模仿cat命令读文件打印到标准输出中`

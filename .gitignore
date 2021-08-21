@@ -34,3 +34,4 @@
 .dist/*
 **/build/*
 .vscode
+**/out/*

@@ -12,6 +12,8 @@ typedef struct {
 } UVTimer;
 static JSContext *JS_NewCustomContext(JSRuntime *rt);
 static void JS_AddLibuv(JSContext *ctx);
+void wait_for_a_while(uv_idle_t *handle);
+
 int main(int argc, char **argv) {
   JSRuntime *rt;
   rt = JS_NewRuntime();
@@ -19,9 +21,14 @@ int main(int argc, char **argv) {
   loop = uv_default_loop();
   /* 给global对象添加console能力 */
   js_std_add_helpers(ctx, argc, argv);
-  /* 解析运行quickjs的二进制指令代码 */
+  /* 解析运行test_libuv.js的生成的quickjs的二进制指令 */
   js_std_eval_binary(ctx, qjsc_test_libuv, qjsc_test_libuv_size, 0);
+  /* 消费掉eval产生的微任务 */
+  wait_for_a_while(NULL);
 
+  uv_idle_t idler;
+  uv_idle_init(uv_default_loop(), &idler);
+  uv_idle_start(&idler, wait_for_a_while);
   /* libuv */
   uv_run(loop, UV_RUN_DEFAULT);
 
@@ -32,6 +39,17 @@ int main(int argc, char **argv) {
   JS_FreeRuntime(rt);
   return 0;
 }
+
+void wait_for_a_while(uv_idle_t *handle)
+{
+  JSContext *ctx1;
+  int err;
+  err =JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
+  if (err < 0) {
+    js_std_dump_error(ctx1);
+  }
+}
+
 static JSContext *JS_NewCustomContext(JSRuntime *rt) {
   JSContext *ctx = JS_NewContextRaw(rt);
   if (!ctx)
@@ -44,6 +62,7 @@ static JSContext *JS_NewCustomContext(JSRuntime *rt) {
   JS_AddIntrinsicEval(ctx);
   //初始化下面的标准对象
   JS_AddIntrinsicStringNormalize(ctx);
+  JS_AddIntrinsicPromise(ctx);
   JS_AddLibuv(ctx);
   return ctx;
 }
@@ -121,6 +140,6 @@ static int js_libuv_init(JSContext *ctx, JSModuleDef *m) {
                                 countof(js_libuv_funcs));
 }
 static void JS_AddLibuv(JSContext *ctx) {
-  JSModuleDef *m = JS_NewCModule(ctx, "libuv.so", js_libuv_init);
+  JSModuleDef *m = JS_NewCModule(ctx, "os", js_libuv_init);
   JS_AddModuleExportList(ctx, m, js_libuv_funcs, countof(js_libuv_funcs));
 }

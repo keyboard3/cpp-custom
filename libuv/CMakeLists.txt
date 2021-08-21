@@ -6,6 +6,8 @@ project(custom_libuv VERSION 1.0)
 include_directories(./lib)
 link_directories(./lib)
 
+add_subdirectory(plugin_lib)
+
 # 添加libuv库
 add_library(uv STATIC IMPORTED)
 set_target_properties(uv
@@ -19,7 +21,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # compile source
-add_executable(hello ./hello.cpp)
 add_executable(idle ./idle.cpp)
 add_executable(fscat ./fscat.cpp)
 add_executable(tcpServer ./tcp-echo-server.cpp)
@@ -30,6 +31,6 @@ add_executable(interfaces ./interfaces.cpp)
 add_executable(timer ./ref-timer.cpp)
 add_executable(idleCompute ./idle-compute.cpp)
 add_executable(uvwget ./uvwget.cpp)
-add_executable(plugin ./plugin.c)
+add_executable(plugin ./plugin.cpp)
 add_executable(tty ./tty.cpp)
 add_executable(ttyGravity ./tty-gravity.cpp)

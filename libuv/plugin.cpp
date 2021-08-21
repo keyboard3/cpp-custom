@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <uv.h>
-#include "plugin/plugin.h"
+#include "plugin_lib/plugin.h"
 /**
  * 示例：http://docs.libuv.org/en/v1.x/guide/utilities.html
  * libuv提供了跨平台动态加载共享库的api

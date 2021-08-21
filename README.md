@@ -15,23 +15,24 @@ cmake .. && cmake --build .
 - [JIT原型](./jit-proto.cpp)
 - [cmake step1 - step10](./cmake)
 - libuv
-    - [监听 idle](./libuv/idle.cpp)
-    - [读写文件 cat](./libuv/fscat.cpp)
-    - [客户端 tcp](./libuv/tcp-echo-client.cpp)
-    - [服务端 tcp](./libuv/tcp-echo-server.cpp)
-    - [udp-dhcp](./libuv/udp-dhcp.cpp)
-    - [dns](./libuv/dns.cpp)
-    - [网络 interfaces](./libuv/interfaces.cpp)
-    - [ref timer](./libuv/ref-timer.cpp)
-    - [idle compute](./libuv/idle-compute.cpp)
-    - [plugin](./libuv/plugin.cpp)
-    - [tty](./libuv/tty.cpp)
-    - [tty Gravity](./libuv/tty-gravity.cpp)
+    - [idle](./libuv/idle.cpp): `libuv空闲时回调`
+    - [cat](./libuv/fscat.cpp): `模仿cat命令读文件打印到标准输出中`
+    - [客户端 tcp](./libuv/tcp-echo-client.cpp): `tcp client 与 tcp server端的通信示例`
+    - [服务端 tcp](./libuv/tcp-echo-server.cpp): `tcp server 与 tcp client端的通信示例`
+    - [udp-dhcp](./libuv/udp-dhcp.cpp): `局域网内的dhcp server发送分配请求以获得分配的ip地址`
+    - [dns](./libuv/dns.cpp): `查询域名的ip地址`
+    - [网络 interfaces](./libuv/interfaces.cpp): `类似于ifconfig来查询本机网络设备的信息`
+    - [ref timer](./libuv/ref-timer.cpp): `移除loop中active状态的引用`
+    - [idle compute](./libuv/idle-compute.cpp): `在loop空闲时间做一些低优先级任务`
+    - [uvwget](./libuv/uvwget.cpp): `细粒度的控制curl库的下载过程`
+    - [plugin](./libuv/plugin.cpp): `跨平台加载动态库`
+    - [tty](./libuv/tty.cpp): `终端输出的标准格式化应用`
+    - [tty Gravity](./libuv/tty-gravity.cpp): `终端标准输出的简易动画`
 - quickjs
     - [hello](./quickjs/hello.c): `打印'Hello World'`
     - [test_fib](./quickjs/test_fib.c): `在js代码导入c++模块`
     - [test_timeout](./quickjs/test_fib.c): `在js代码支持os系统任务的调用，如setTimeout`
-    - [test_libuv](./quickjs/test_libuv.c): 基于libuv的loop实现js任务的执行
+    - [test_libuv](./quickjs/test_libuv.c): `基于libuv的loop实现js任务的执行`
         - 支持setTimeout,clearTimeout宏任务
         - 支持微任务及保证和宏任务的执行顺序
 - skia

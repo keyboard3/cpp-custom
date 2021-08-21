@@ -5,6 +5,12 @@ project(custom_libuv VERSION 1.0)
 
 include_directories(./lib)
 link_directories(./lib)
+
+# 添加libuv库
+add_library(uv STATIC IMPORTED)
+set_target_properties(uv
+                PROPERTIES IMPORTED_LOCATION
+                ${CMAKE_CURRENT_SOURCE_DIR}/lib/libuv.a)
 link_libraries(uv)
 link_libraries(curl)
 

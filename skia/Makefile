@@ -7,6 +7,6 @@ ready:
 	ln -s ../../skia/include include
 	ln -s ../../skia/tools tools
 
-hello:
+browser:
 	cat skia.gn BUILD.gn  > ../../skia/BUILD.gn
 	cd ../../skia && ninja -C out/Clang :jsGUI

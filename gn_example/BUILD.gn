@@ -2,6 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+executable("hellojs") {
+  sources = [ "hello.c" ]
+
+  deps = [
+    ":hello_shared",
+    ":hello_static",
+  ]
+  include_dirs = [ "/usr/local/include"]
+  libs = ["/usr/local/lib/quickjs/libquickjs.a"]
+}
+
 executable("hello") {
   sources = [ "hello.cc" ]
 

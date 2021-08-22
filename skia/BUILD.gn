@@ -1,0 +1,14 @@
+test_app("jsGUI") {
+  sources = [ "jsGUI/HelloWorld.cpp" ]
+  libs = []
+
+  deps = [
+    ":flags",
+    ":gpu_tool_utils",
+    ":sk_app",
+    ":skia",
+    ":tool_utils",
+  ]
+  include_dirs = [ "/usr/local/include"]
+  libs = ["/usr/local/lib/quickjs/libquickjs.a"]
+}

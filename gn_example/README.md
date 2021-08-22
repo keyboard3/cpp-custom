@@ -1,5 +1,6 @@
 # GN 简单的构建示例
 来源：https://gn.googlesource.com/gn/
+api文档：https://gn.googlesource.com/gn/+/HEAD/docs/reference.md#
 
 这是一个用gcc来编译一些简单项目的示例。它用来展示如何配置一个简单的GN构建。因为故意简单所以目录结构更清晰，但不支持所有平台。
 

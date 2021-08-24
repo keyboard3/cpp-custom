@@ -37,9 +37,13 @@ cmake .. && cmake --build .
         - 支持setTimeout,clearTimeout宏任务
         - 支持微任务及保证和宏任务的执行顺序
 - skia
-    - [jsGUI](./skia/jsGUI): `简易浏览器`
+    - [jsGUI](./skia/jsGUI): `简易浏览器(基于Quickjs)`
         - 支持DivComponent绘制
         - 支持DivComponent事件点击及window事件点击
+        - 支持setRootDOM api
+        - 支持dom点击事件绑定
+        - 支持嵌套dom解析
+        - 支持js文件外部动态载入
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

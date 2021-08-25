@@ -16,6 +16,7 @@ cmake .. && cmake --build .
 - [Makefile](./cmake): `编译工具Make的简单示例`
 - [cmake step1 - step10](./cmake): `元构建系统cmake演变至step10的示例`
 - [gn simple example](./gn_example): `元构建系统gn构建示例`
+- [xml parser](./xml_parser): `简易xml解析器`
 - libuv
     - [idle](./libuv/idle.cpp): `libuv空闲时回调`
     - [cat](./libuv/fscat.cpp): `模仿cat命令读文件打印到标准输出中`

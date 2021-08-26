@@ -7,7 +7,6 @@ enum Token {
   tok_eof = -1,
   // primary 基础元素
   tok_identifier = -2,
-  tok_number = -3,
   tok_beginTag = -4,
   tok_closeTag = -5,
 };
@@ -15,7 +14,6 @@ enum Token {
 // gettok()拿到tok类型之后，数据从这里拿
 static string IdentifierStr;
 static string TagStr;
-static double NumVal;
 static int LastChar = ' ';
 static int gettok() {
   while (isspace(LastChar))
@@ -27,16 +25,6 @@ static int gettok() {
     while (isalnum(LastChar = getchar()))
       IdentifierStr += LastChar;
     return tok_identifier;
-  }
-  //识别出数字: [0-9.]+
-  if (isdigit(LastChar) || LastChar == '.') {
-    std::string NumStr;
-    do {
-      NumStr += LastChar;
-      LastChar = getchar();
-    } while (isdigit(LastChar) || LastChar == '.');
-    NumVal = strtod(NumStr.c_str(), 0);
-    return tok_number;
   }
   // startTag or endTag
   if (LastChar == '<') {
@@ -72,19 +60,13 @@ enum NodeType { node_num = 1, node_str = 2, node_list = 3 };
 class Node {
 public:
   Node(string strVal) : strVal(strVal) { type = node_str; }
-  Node(double numVal) : numVal(numVal) { type = node_num; }
   Node(list<pair<string, Node *>> *list) : list(list) { type = node_list; }
   NodeType type;
   string strVal;
-  double numVal;
   list<pair<string, Node *>> *list;
   void print(string tab, string key) {
     if (type == node_str) {
       printf("%s key:%s val:%s\n", tab.c_str(), key.c_str(), strVal.c_str());
-      return;
-    }
-    if (type == node_num) {
-      printf("%s key:%s val:%f\n", tab.c_str(), key.c_str(), numVal);
       return;
     }
     printf("%s key:%s\n", tab.c_str(), key.c_str());
@@ -96,17 +78,8 @@ public:
 
 void parseXml(string parentName, Node *&slot) {
   getNextToken(); // eat beginTag
-  if (CurTok == tok_identifier) {
-    slot = new Node(IdentifierStr);
-    getNextToken(); // eat tok_identifier
-    return;
-  }
-  if (CurTok == tok_number) {
-    slot = new Node(NumVal);
-    getNextToken(); // eat tok_number
-    return;
-  }
 
+  string strVal = "";
   list<pair<string, Node *>> *child = new list<pair<string, Node *>>();
   while (CurTok != tok_eof &&
          !(CurTok == tok_closeTag && TagStr == parentName)) {
@@ -114,22 +87,32 @@ void parseXml(string parentName, Node *&slot) {
       Node *node = nullptr;
       parseXml(TagStr, node);
       child->push_back({TagStr, node});
+      continue;
     }
     if (CurTok == tok_closeTag) {
       getNextToken(); // eat closeTag
+      continue;
     }
+    if (CurTok == tok_identifier) {
+      if (strVal != "")
+        strVal += " ";
+      strVal += IdentifierStr;
+    } else
+      strVal += CurTok;
+    getNextToken(); // eat tok_number
   }
-  slot = new Node(child);
+  if (child->size() == 0)
+    slot = new Node(strVal);
+  else
+    slot = new Node(child);
 }
 
 int main(int argc, char *argv[]) {
-  Node *node = new Node(2);
-
-  getNextToken();
+  getNextToken(); // eat begin xml
   if (CurTok == tok_beginTag && TagStr == "xml") {
     Node *root = nullptr;
     parseXml("xml", root);
-    getNextToken();
+    getNextToken(); // eat close xml
     root->print("", "xml");
     return 0;
   }

@@ -1,3 +1,5 @@
+#include "fstream"
+#include "iostream"
 #include "list"
 #include "map"
 #include "stdlib.h"
@@ -14,39 +16,49 @@ enum Token {
 };
 
 // gettok()拿到tok类型之后，数据从这里拿
+static string gContent;      //读取的html内容
+static string::iterator git; //迭代指针
+
 static string IdentifierStr; //属性名
 static string StrVal;        //属性值
 static string TagStr;        //标签名
 static int LastChar = ' ';
+static int getStrChar() {
+  if (git == gContent.end())
+    return EOF;
+  int cur = *git;
+  git++;
+  return cur;
+}
 static int gettok() {
   while (isspace(LastChar))
-    LastChar = getchar();
+    LastChar = getStrChar();
 
   //识别出标识符: [a-zA-Z][a-zA-Z0-9]*
   if (isalpha(LastChar)) {
     IdentifierStr = LastChar;
-    while (isalnum(LastChar = getchar()))
+    while (isalnum(LastChar = getStrChar()))
       IdentifierStr += LastChar;
     return tok_identifier;
   }
   if (LastChar == '"') {
     string str;
-    LastChar = getchar(); // eat "
+    LastChar = getStrChar(); // eat "
     do {
       str += LastChar;
-      LastChar = getchar();
+      LastChar = getStrChar();
     } while (LastChar != '"');
-    LastChar = getchar();
+    LastChar = getStrChar();
     StrVal = str;
     return tok_string;
   }
   // startTag or endTag
   if (LastChar == '<') {
     bool isEndTag = false;
-    LastChar = getchar(); // eat <
+    LastChar = getStrChar(); // eat <
     if (LastChar == '/') {
       isEndTag = true;
-      LastChar = getchar(); // eat /
+      LastChar = getStrChar(); // eat /
     }
     //标签后面应该是标识符
     int idType = gettok();
@@ -54,7 +66,7 @@ static int gettok() {
       throw "xml is error";
     TagStr = IdentifierStr;
     if (isEndTag) {
-      LastChar = getchar(); // eat >
+      LastChar = getStrChar(); // eat >
       return tok_closeTag;
     }
     // beigin 会多出>
@@ -64,7 +76,7 @@ static int gettok() {
     return tok_eof;
   }
   int ThisChar = LastChar;
-  LastChar = getchar(); // ready next
+  LastChar = getStrChar(); // ready next
   return ThisChar;
 }
 
@@ -174,16 +186,36 @@ void parseXml(string parentName, DOM *dom) {
     dom->children = new Node(content);
 }
 
-int main(int argc, char *argv[]) {
+string getFileContent(string filepath) {
+  string content, line;
+  ifstream htmlFile(filepath);
+  if (htmlFile.is_open()) {
+    while (getline(htmlFile, line)) {
+      content += line;
+    }
+    htmlFile.close();
+  }
+  return content;
+}
+
+DOM *getRoot(string filpath) {
+  gContent = getFileContent(filpath);
+  git = gContent.begin();
+
   getNextToken(); // eat <html
   string rootTag = "html";
   if (CurTok == tok_beginTag && TagStr == rootTag) {
     DOM *root = new DOM(rootTag);
     parseXml(rootTag, root);
-    getNextToken(); // eat </html>
-    root->children->print("");
-    return 0;
+    getNextToken();
+    return root;
   }
-  perror("not found html root\n");
+  return nullptr;
+}
+
+int main(int argc, char *argv[]) {
+  DOM *root = getRoot("index.html");
+  if (root != nullptr)
+    root->children->print("");
   return 0;
 }

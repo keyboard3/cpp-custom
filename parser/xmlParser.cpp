@@ -81,18 +81,23 @@ void parseXml(string parentName, Node *&slot) {
 
   string strVal = "";
   list<pair<string, Node *>> *child = new list<pair<string, Node *>>();
+  //解析标签正文内容，以识别出父节点的结束标签或者是字符结尾结束
   while (CurTok != tok_eof &&
          !(CurTok == tok_closeTag && TagStr == parentName)) {
+    //如果正文内容里，识别出了标签开头
     if (CurTok == tok_beginTag) {
       Node *node = nullptr;
+      //解析这个标签的内容了，以当前的TagStr为结束标记
       parseXml(TagStr, node);
       child->push_back({TagStr, node});
       continue;
     }
+    //如果是结束标签（相对应了前面的开始标签）
     if (CurTok == tok_closeTag) {
       getNextToken(); // eat closeTag
       continue;
     }
+    //这里就是解析纯文本内容
     if (CurTok == tok_identifier) {
       if (strVal != "")
         strVal += " ";

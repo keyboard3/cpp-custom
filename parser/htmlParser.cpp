@@ -120,7 +120,7 @@ public:
 /*
   解析内容xml，将解析结果放到slot上
 */
-void parseXml(string parentName, DOM *dom) {
+void parseTag(string parentName, DOM *dom) {
   if (CurTok != tok_beginTag)
     throw "must beigin tag";
   // eat beginTag and attributes and >
@@ -158,7 +158,7 @@ void parseXml(string parentName, DOM *dom) {
         continue;
       }
       DOM *dom = new DOM(TagStr);
-      parseXml(TagStr, dom);
+      parseTag(TagStr, dom);
       child->push_back(dom);
       continue;
     }
@@ -198,7 +198,7 @@ string getFileContent(string filepath) {
   return content;
 }
 
-DOM *getRoot(string filpath) {
+DOM *parseHtml(string filpath) {
   gContent = getFileContent(filpath);
   git = gContent.begin();
 
@@ -206,7 +206,7 @@ DOM *getRoot(string filpath) {
   string rootTag = "html";
   if (CurTok == tok_beginTag && TagStr == rootTag) {
     DOM *root = new DOM(rootTag);
-    parseXml(rootTag, root);
+    parseTag(rootTag, root);
     getNextToken();
     return root;
   }
@@ -214,7 +214,7 @@ DOM *getRoot(string filpath) {
 }
 
 int main(int argc, char *argv[]) {
-  DOM *root = getRoot("index.html");
+  DOM *root = parseHtml("index.html");
   if (root != nullptr)
     root->children->print("");
   return 0;

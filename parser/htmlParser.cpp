@@ -138,13 +138,24 @@ void parseXml(string parentName, DOM *dom) {
   string content;
   while (CurTok != tok_eof &&
          !(CurTok == tok_closeTag && TagStr == parentName)) {
+    //将非javascript标签下归档处理
     if (CurTok == tok_beginTag) {
+      if (parentName == "javascript") {
+        content += "<" + TagStr;
+        getNextToken();
+        continue;
+      }
       DOM *dom = new DOM(TagStr);
       parseXml(TagStr, dom);
       child->push_back(dom);
       continue;
     }
     if (CurTok == tok_closeTag) {
+      if (parentName == "javascript") {
+        content += "</" + TagStr + ">";
+        getNextToken();
+        continue;
+      }
       getNextToken(); // eat closeTag
       continue;
     }

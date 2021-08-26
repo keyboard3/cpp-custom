@@ -17,6 +17,7 @@ cmake .. && cmake --build .
 - [cmake step1 - step10](./cmake): `元构建系统cmake演变至step10的示例`
 - [gn simple example](./gn_example): `元构建系统gn构建示例`
 - [xml parser](./parser/xmlParser.cpp): `简易xml解析器`
+- [html parser](./parser/htmlParser.cpp): `简易html解析器`
 - libuv
     - [idle](./libuv/idle.cpp): `libuv空闲时回调`
     - [cat](./libuv/fscat.cpp): `模仿cat命令读文件打印到标准输出中`

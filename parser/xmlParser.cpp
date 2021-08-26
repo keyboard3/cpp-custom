@@ -1,7 +1,4 @@
-#include "fstream"
-#include "iostream"
 #include "list"
-#include "map"
 #include "stdlib.h"
 #include "string"
 using namespace std;
@@ -19,8 +16,8 @@ enum Token {
 static string IdentifierStr;
 static string TagStr;
 static double NumVal;
+static int LastChar = ' ';
 static int gettok() {
-  static int LastChar = ' ';
   while (isspace(LastChar))
     LastChar = getchar();
 
@@ -44,17 +41,17 @@ static int gettok() {
   // startTag or endTag
   if (LastChar == '<') {
     bool isEndTag = false;
-    LastChar = getchar();
+    LastChar = getchar(); // eat <
     if (LastChar == '/') {
       isEndTag = true;
-      LastChar = getchar();
+      LastChar = getchar(); // eat /
     }
     //标签后面应该是标识符
-    int idType = gettok();
+    int idType = gettok(); // eat tok_identifier
     if (idType != tok_identifier)
       throw "xml is error";
     TagStr = IdentifierStr;
-    LastChar = getchar();
+    LastChar = getchar(); // eat >
     if (isEndTag)
       return tok_closeTag;
     return tok_beginTag;
@@ -62,8 +59,10 @@ static int gettok() {
   if (LastChar == EOF) {
     return tok_eof;
   }
-  //严格xml格式不会到最后1步
-  return LastChar;
+
+  int ThisChar = LastChar;
+  LastChar = getchar(); // eat cur and ready next
+  return ThisChar;
 }
 
 static int CurTok;
@@ -96,16 +95,15 @@ public:
 };
 
 void parseXml(string parentName, Node *&slot) {
-  getNextToken();
-  //消化掉内容及结束节点
+  getNextToken(); // eat beginTag
   if (CurTok == tok_identifier) {
     slot = new Node(IdentifierStr);
-    getNextToken();
+    getNextToken(); // eat tok_identifier
     return;
   }
   if (CurTok == tok_number) {
     slot = new Node(NumVal);
-    getNextToken();
+    getNextToken(); // eat tok_number
     return;
   }
 
@@ -118,7 +116,7 @@ void parseXml(string parentName, Node *&slot) {
       child->push_back({TagStr, node});
     }
     if (CurTok == tok_closeTag) {
-      CurTok = getNextToken();
+      getNextToken(); // eat closeTag
     }
   }
   slot = new Node(child);

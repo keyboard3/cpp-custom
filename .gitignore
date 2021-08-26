@@ -35,3 +35,5 @@
 **/build/*
 .vscode
 **/out/*
+**/.dist/*
+**/.dsYM/*

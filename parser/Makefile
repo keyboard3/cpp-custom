@@ -3,3 +3,5 @@ CC=g++
 PRE=mkdir -p .dist &&
 xmlParser:
 	${PRE} ${CC} $(CFLAGS) -g $@.cpp -o .dist/$@ && .dist/$@ < index.xml
+htmlParser:
+	${PRE} ${CC} $(CFLAGS) -g $@.cpp -o .dist/$@ && .dist/$@ < index.html

@@ -9,6 +9,7 @@
 #include "component.h"
 #include "evalJs.h"
 #include "filesystem"
+#include "htmlParser.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkGraphics.h"
@@ -17,11 +18,14 @@
 #include "iostream"
 #include "list"
 #include "quickjs/quickjs-libc.h"
-#include "thread"
+using namespace std;
 
 #define countof(x) (sizeof(x) / sizeof((x)[0]))
 using namespace sk_app;
 
+SkColor getColor(JSContext *ctx, JSValue colorVal);
+SkColor getColor(string strColor);
+SkColor getColor(string strColor, SkColor defColor);
 /*
 以mac平台为示例-启动过程：
 向NSApp设置AppDelegate来捕获某些全局事件
@@ -42,7 +46,6 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
     : fBackendType(Window::kRaster_BackendType) //(Window::kNativeGL_BackendType
 {
   initJsEngine();
-  initJsPage();
   /*
     创建windowDelegate来跟踪某些事件
     Mac上创建Cocoa window,创建1280*960的矩形作为contentView
@@ -56,6 +59,9 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
   fWindow->pushLayer(this);
   // 初始化完成，attach会触发的onBackendCreated
   fWindow->attach(fBackendType);
+
+  // initJsPage();
+  initHtmlPage();
 }
 
 /* 析构函数 */
@@ -91,8 +97,8 @@ void SimpleBrowser::onPaint(SkSurface *surface) {
   font.setSubpixel(true);
 
   std::list<DivComponent *> divs;
-  if (this->root != nullptr)
-    divs.push_back(this->root);
+  if (this->drawObj != nullptr)
+    divs.push_back(this->drawObj);
   for (auto div : divs) {
     // std::cout << "渲染 div" << std::endl;
     // div有背景就画一个矩形
@@ -101,7 +107,7 @@ void SimpleBrowser::onPaint(SkSurface *surface) {
       SkRect rect = SkRect::MakeXYWH(div->x, div->y, div->width, div->height);
       canvas->drawRect(rect, paint);
     }
-    if (div->color != 0 && div->innerText.length() != 0) {
+    if (div->innerText.length() != 0) {
       font.setSize(div->fontSize);
       paint.setColor(div->color);
       // std::cout << "onPaint:innerText:" << div->innerText << std::endl;
@@ -125,6 +131,193 @@ void SimpleBrowser::onIdle() {
   */
   // fWindow->inval();
 }
+static JSContext *JS_NewCustomContext(JSRuntime *rt) {
+  JSContext *ctx = JS_NewContextRaw(rt);
+  if (!ctx)
+    return NULL;
+  //添加对Object,Function,Array,Number,String,Symbol等构造函数proto及自身初始化
+  JS_AddIntrinsicBaseObjects(ctx);
+  //初始化标准的Date
+  JS_AddIntrinsicDate(ctx);
+  //给ctx的eval_internal初始化__JS_EvalInternal的能力
+  JS_AddIntrinsicEval(ctx);
+  //初始化下面的标准对象
+  JS_AddIntrinsicStringNormalize(ctx);
+  JS_AddIntrinsicPromise(ctx);
+  return ctx;
+}
+DivComponent *parseDivComponent(JSContext *ctx, JSValue domVal);
+
+SimpleBrowser *globalBrowser = nullptr;
+JSValue setRootDOM(JSContext *ctx, JSValueConst this_val, int argc,
+                   JSValueConst *argv) {
+  JSValueConst rootDom;
+  rootDom = argv[0];
+
+  globalBrowser->drawObj = parseDivComponent(ctx, rootDom);
+  return JS_UNDEFINED;
+}
+DivComponent *parseDivComponent(JSContext *ctx, JSValue domVal) {
+  DivComponent *comp = new DivComponent();
+  int32_t x, y, width, height, paddingLeft, fontSize;
+  auto getPropertyInt = [&](int32_t *val, const char *prop) {
+    JSValue jsValue = JS_GetPropertyStr(ctx, domVal, prop);
+    JS_ToInt32(ctx, val, jsValue);
+  };
+  /* 解析div主要的属性 */
+  getPropertyInt(&x, "x");
+  getPropertyInt(&y, "y");
+  getPropertyInt(&width, "width");
+  getPropertyInt(&height, "height");
+  getPropertyInt(&paddingLeft, "paddingLeft");
+  getPropertyInt(&fontSize, "fontSize");
+  comp->x = x;
+  comp->y = y;
+  comp->width = width;
+  comp->height = height;
+  comp->paddingLeft = paddingLeft;
+  comp->fontSize = fontSize;
+  comp->background =
+      getColor(ctx, JS_GetPropertyStr(ctx, domVal, "background"));
+  comp->color = getColor(ctx, JS_GetPropertyStr(ctx, domVal, "color"));
+  JSValue textValue = JS_GetPropertyStr(ctx, domVal, "innerText");
+  comp->innerText = JS_ToCString(ctx, textValue);
+
+  JSValue clickValue = JS_GetPropertyStr(ctx, domVal, "onClick");
+  comp->onClick = clickValue;
+  comp->clickThis = domVal;
+
+  /* 在JS中数组在底层也是JS对象，通过index属性访问 */
+  JSValue childrenValue = JS_GetPropertyStr(ctx, domVal, "children");
+  int32_t childLen;
+  JSValue lenVal = JS_GetPropertyStr(ctx, childrenValue, "length");
+  JS_ToInt32(ctx, &childLen, lenVal);
+
+  for (int i = 0; i < childLen; i++) {
+    DivComponent *child =
+        parseDivComponent(ctx, JS_GetPropertyUint32(ctx, childrenValue, i));
+    comp->children.push_back(child);
+  }
+  return comp;
+}
+void SimpleBrowser::initJsEngine() {
+  rt = JS_NewRuntime();
+  ctx = JS_NewCustomContext(rt);
+
+  /* 给global对象添加console能力 */
+  js_std_add_helpers(ctx, 0, 0);
+  /* 给global对象添加setRootDOM能力 */
+  JSValue global_obj = JS_GetGlobalObject(ctx);
+  JS_SetPropertyStr(ctx, global_obj, "window", global_obj);
+  JS_SetPropertyStr(ctx, global_obj, "setRootDOM",
+                    JS_NewCFunction(ctx, setRootDOM, "setRootDOM", 1));
+  globalBrowser = this;
+}
+
+DivComponent *domToDiv(DOM *dom, JSContext *ctx) {
+  DivComponent *div = new DivComponent();
+  auto hasAttributes = [&](string key) -> bool {
+    return dom->attributes.find(key) != dom->attributes.end();
+  };
+  auto getNumValue = [&](string key, int32_t defVal) -> int32_t {
+    if (hasAttributes(key))
+      return stoi(dom->attributes[key], nullptr, defVal);
+    return defVal;
+  };
+  auto getStrValue = [&](string key) -> string {
+    if (hasAttributes(key))
+      return dom->attributes[key];
+    return "";
+  };
+
+  div->width = getNumValue("width", 0);
+  div->height = getNumValue("height", 0);
+  div->x = getNumValue("x", 0);
+  div->y = getNumValue("y", 0);
+  div->fontSize = getNumValue("fontSize", 12);
+  div->paddingLeft = getNumValue("paddingLeft", 0);
+  div->background = getColor(getStrValue("background"));
+  div->color = getColor(getStrValue("color"), SK_ColorBLACK);
+  if (hasAttributes("onclick")) {
+    string clickFun = "()=>{" + dom->attributes["onclick"] + "}";
+    JSValue ret =
+        JS_Eval(ctx, clickFun.c_str(), clickFun.length(),
+                (dom->name + "_onclick").c_str(), JS_EVAL_TYPE_GLOBAL);
+    JSValue global_obj = JS_GetGlobalObject(ctx);
+    if (ret.tag == JS_UNDEFINED.tag) {
+      perror("no function found\n");
+      return div;
+    }
+    div->clickThis = global_obj;
+    div->onClick = ret;
+  }
+  return div;
+}
+void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx) {
+  //遇到js标签执行js代码
+  if (curDOM->name == "javascript") {
+    JS_Eval(ctx, curDOM->children->strVal.c_str(),
+            curDOM->children->strVal.length(), "<javascript>",
+            JS_EVAL_TYPE_GLOBAL);
+    //处理eval产生的微任务队列
+    JSContext *ctx1;
+    int err;
+    err = JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
+    if (err < 0) {
+      js_std_dump_error(ctx1);
+    }
+    return;
+  }
+  //构建绘图树
+  DivComponent *dom = domToDiv(curDOM, ctx);
+  //如果是本文节点设置绘制文本
+  if (curDOM->children->type == node_str) {
+    dom->innerText = curDOM->children->strVal;
+    parentDiv->children.push_back(dom);
+    return;
+  }
+  //如果是dom列表就递归解析到绘图节点上
+  for (auto child : *curDOM->children->list) {
+    parseDOM(dom, child, ctx);
+  }
+  parentDiv->children.push_back(dom);
+}
+
+void SimpleBrowser::initHtmlPage() {
+  std::string fielname = std::string(std::filesystem::current_path().c_str()) +
+                         "/jsGUI/index.html";
+  this->rootDOM = parseHtml(fielname);
+  this->drawObj = domToDiv(this->rootDOM, ctx);
+  if (this->rootDOM->children->type != node_list)
+    return;
+  //将根节点html内容下的子节点，递归解析出绘图树
+  for (auto child : *this->rootDOM->children->list) {
+    parseDOM(this->drawObj, child, ctx);
+  }
+}
+void SimpleBrowser::draw() {
+  this->drawObj = domToDiv(this->rootDOM, ctx);
+  if (fWindow != nullptr)
+    fWindow->inval();
+}
+void SimpleBrowser::initJsPage() {
+  std::string fielname =
+      std::string(std::filesystem::current_path().c_str()) + "/jsGUI/index.js";
+  JSValue fileName = JS_NewString(ctx, fielname.c_str());
+  js_loadScript(ctx, JS_UNDEFINED, 1, &fileName);
+
+  std::cout << "eval_file:" << std::endl;
+  /* 解析运行index.js的生成的quickjs的二进制指令 */
+  // js_std_eval_binary(ctx, qjsc_index, qjsc_index_size, 0);
+  /* 执行掉后面的微任务队列 */
+  JSContext *ctx1;
+  int err;
+  err = JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
+  if (err < 0) {
+    js_std_dump_error(ctx1);
+  }
+}
+
 /* 应该是键盘输入的回调 */
 bool SimpleBrowser::onChar(SkUnichar c, skui::ModifierKey modifiers) {
   std::cout << "onChar" << c << std::endl;
@@ -199,7 +392,7 @@ bool SimpleBrowser::onComponentClick(Click *c) {
 bool SimpleBrowser::onClick(Click *c) {
   std::cout << "无人响应，则全局响应点击事件:" << c->fCurr.fX << ","
             << c->fCurr.fY << std::endl;
-  root->innerText = "global response";
+  this->drawObj->innerText = "global response";
   fWindow->inval();
   return false;
 }
@@ -207,8 +400,8 @@ bool SimpleBrowser::onClick(Click *c) {
 Click *SimpleBrowser::onFindClickHandler(SkScalar x, SkScalar y,
                                          skui::ModifierKey modi) {
   std::list<DivComponent *> divs;
-  if (this->root != nullptr)
-    divs.push_back(root);
+  if (this->drawObj != nullptr)
+    divs.push_back(this->drawObj);
   DivComponent *findDiv = nullptr;
   for (auto div : divs) {
     bool isOuter = false;
@@ -233,133 +426,43 @@ Click *SimpleBrowser::onFindClickHandler(SkScalar x, SkScalar y,
   std::cout << "这个坐标没有div" << std::endl;
   return nullptr;
 }
-static JSContext *JS_NewCustomContext(JSRuntime *rt) {
-  JSContext *ctx = JS_NewContextRaw(rt);
-  if (!ctx)
-    return NULL;
-  //添加对Object,Function,Array,Number,String,Symbol等构造函数proto及自身初始化
-  JS_AddIntrinsicBaseObjects(ctx);
-  //初始化标准的Date
-  JS_AddIntrinsicDate(ctx);
-  //给ctx的eval_internal初始化__JS_EvalInternal的能力
-  JS_AddIntrinsicEval(ctx);
-  //初始化下面的标准对象
-  JS_AddIntrinsicStringNormalize(ctx);
-  JS_AddIntrinsicPromise(ctx);
-  return ctx;
-}
-DivComponent *parseDivComponent(JSContext *ctx, JSValue domVal);
-SkColor getColor(JSContext *ctx, JSValue colorVal);
-SimpleBrowser *globalBrowser = nullptr;
-JSValue setRootDOM(JSContext *ctx, JSValueConst this_val, int argc,
-                   JSValueConst *argv) {
-  JSValueConst rootDom;
-  rootDom = argv[0];
-
-  globalBrowser->root = parseDivComponent(ctx, rootDom);
-  return JS_UNDEFINED;
-}
-DivComponent *parseDivComponent(JSContext *ctx, JSValue domVal) {
-  DivComponent *comp = new DivComponent();
-  int32_t x, y, width, height, paddingLeft, fontSize;
-  auto getPropertyInt = [&](int32_t *val, const char *prop) {
-    JSValue jsValue = JS_GetPropertyStr(ctx, domVal, prop);
-    JS_ToInt32(ctx, val, jsValue);
-  };
-  /* 解析div主要的属性 */
-  getPropertyInt(&x, "x");
-  getPropertyInt(&y, "y");
-  getPropertyInt(&width, "width");
-  getPropertyInt(&height, "height");
-  getPropertyInt(&paddingLeft, "paddingLeft");
-  getPropertyInt(&fontSize, "fontSize");
-  comp->x = x;
-  comp->y = y;
-  comp->width = width;
-  comp->height = height;
-  comp->paddingLeft = paddingLeft;
-  comp->fontSize = fontSize;
-  comp->background =
-      getColor(ctx, JS_GetPropertyStr(ctx, domVal, "background"));
-  comp->color = getColor(ctx, JS_GetPropertyStr(ctx, domVal, "color"));
-  JSValue textValue = JS_GetPropertyStr(ctx, domVal, "innerText");
-  comp->innerText = JS_ToCString(ctx, textValue);
-
-  JSValue clickValue = JS_GetPropertyStr(ctx, domVal, "onClick");
-  comp->onClick = clickValue;
-  comp->clickThis = domVal;
-
-  /* 在JS中数组在底层也是JS对象，通过index属性访问 */
-  JSValue childrenValue = JS_GetPropertyStr(ctx, domVal, "children");
-  int32_t childLen;
-  JSValue lenVal = JS_GetPropertyStr(ctx, childrenValue, "length");
-  JS_ToInt32(ctx, &childLen, lenVal);
-
-  for (int i = 0; i < childLen; i++) {
-    DivComponent *child =
-        parseDivComponent(ctx, JS_GetPropertyUint32(ctx, childrenValue, i));
-    comp->children.push_back(child);
-  }
-  return comp;
-}
-void SimpleBrowser::initJsEngine() {
-  rt = JS_NewRuntime();
-  ctx = JS_NewCustomContext(rt);
-
-  /* 给global对象添加console能力 */
-  js_std_add_helpers(ctx, 0, 0);
-  /* 给global对象添加setRootDOM能力 */
-  JSValue global_obj = JS_GetGlobalObject(ctx);
-  JS_SetPropertyStr(ctx, global_obj, "setRootDOM",
-                    JS_NewCFunction(ctx, setRootDOM, "setRootDOM", 1));
-  globalBrowser = this;
-}
-
-void SimpleBrowser::initJsPage() {
-  std::string module_name =
-      std::string(std::filesystem::current_path().c_str()) + "/jsGUI/index.js";
-  JSValue fileName = JS_NewString(ctx, module_name.c_str());
-  js_loadScript(ctx, JS_UNDEFINED, 1, &fileName);
-
-  std::cout << "eval_file:" << std::endl;
-  /* 解析运行index.js的生成的quickjs的二进制指令 */
-  // js_std_eval_binary(ctx, qjsc_index, qjsc_index_size, 0);
-  /* 执行掉后面的微任务队列 */
-  JSContext *ctx1;
-  int err;
-  err = JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
-  if (err < 0) {
-    js_std_dump_error(ctx1);
-  }
-}
 
 SkColor getColor(JSContext *ctx, JSValue colorVal) {
+  std::string strColor;
   if (JS_IsString(colorVal)) {
-    std::string strColor = JS_ToCString(ctx, colorVal);
-    if (strColor == "transparent")
-      return SK_ColorTRANSPARENT;
-    if (strColor == "black")
-      return SK_ColorBLACK;
-    if (strColor == "dkgray")
-      return SK_ColorDKGRAY;
-    if (strColor == "gray")
-      return SK_ColorGRAY;
-    if (strColor == "ltgray")
-      return SK_ColorLTGRAY;
-    if (strColor == "white")
-      return SK_ColorWHITE;
-    if (strColor == "red")
-      return SK_ColorRED;
-    if (strColor == "green")
-      return SK_ColorGREEN;
-    if (strColor == "blue")
-      return SK_ColorBLUE;
-    if (strColor == "yellow")
-      return SK_ColorYELLOW;
-    if (strColor == "cyan")
-      return SK_ColorCYAN;
-    if (strColor == "magenta")
-      return SK_ColorMAGENTA;
+    strColor = JS_ToCString(ctx, colorVal);
   }
-  return SK_ColorTRANSPARENT;
+  return getColor(strColor);
+}
+
+SkColor getColor(string strColor) {
+  return getColor(strColor, SK_ColorTRANSPARENT);
+}
+SkColor getColor(string strColor, SkColor defColor) {
+  if (strColor == "transparent")
+    return SK_ColorTRANSPARENT;
+  if (strColor == "black")
+    return SK_ColorBLACK;
+  if (strColor == "dkgray")
+    return SK_ColorDKGRAY;
+  if (strColor == "gray")
+    return SK_ColorGRAY;
+  if (strColor == "ltgray")
+    return SK_ColorLTGRAY;
+  if (strColor == "white")
+    return SK_ColorWHITE;
+  if (strColor == "red")
+    return SK_ColorRED;
+  if (strColor == "green")
+    return SK_ColorGREEN;
+  if (strColor == "blue")
+    return SK_ColorBLUE;
+  if (strColor == "yellow")
+    return SK_ColorYELLOW;
+  if (strColor == "cyan")
+    return SK_ColorCYAN;
+  if (strColor == "magenta")
+    return SK_ColorMAGENTA;
+
+  return defColor;
 }

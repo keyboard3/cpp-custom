@@ -13,6 +13,7 @@
 #include "tools/SkMetaData.h"
 #include "tools/sk_app/Application.h"
 #include "tools/sk_app/Window.h"
+#include "htmlParser.h"
 class SkCanvas;
 
 class SimpleBrowser : public sk_app::Application, sk_app::Window::Layer {
@@ -26,7 +27,8 @@ public:
   void onBackendCreated() override;
   void onPaint(SkSurface *) override;
   bool onChar(SkUnichar c, skui::ModifierKey modifiers) override;
-  DivComponent *root;
+  DivComponent *drawObj;
+  DOM* rootDOM;
 
 private:
   JSRuntime *rt;
@@ -42,6 +44,8 @@ private:
   virtual bool onClick(Click *);
   virtual bool onComponentClick(Click *c);
   virtual void initJsPage();
+  virtual void initHtmlPage();
   virtual void initJsEngine();
+  virtual void draw();
 };
 #endif

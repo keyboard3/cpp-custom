@@ -1,5 +1,5 @@
 test_app("jsGUI") {
-  sources = [ "jsGUI/SimpleBrowser.cpp","jsGUI/evalJS.cpp"]
+  sources = [ "jsGUI/SimpleBrowser.cpp","jsGUI/evalJS.cpp","jsGUI/htmlParser.cpp"]
   libs = []
 
   deps = [

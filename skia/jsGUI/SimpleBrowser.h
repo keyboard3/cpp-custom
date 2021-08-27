@@ -43,7 +43,6 @@ private:
                                     skui::ModifierKey modi);
   virtual bool onClick(Click *);
   virtual bool onComponentClick(Click *c);
-  virtual void initJsPage();
   virtual void initHtmlPage();
   virtual void initJsEngine();
   virtual void draw();

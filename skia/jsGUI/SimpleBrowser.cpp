@@ -60,7 +60,6 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
   // 初始化完成，attach会触发的onBackendCreated
   fWindow->attach(fBackendType);
 
-  // initJsPage();
   initHtmlPage();
 }
 
@@ -149,14 +148,7 @@ static JSContext *JS_NewCustomContext(JSRuntime *rt) {
 DivComponent *parseDivComponent(JSContext *ctx, JSValue domVal);
 
 SimpleBrowser *globalBrowser = nullptr;
-JSValue setRootDOM(JSContext *ctx, JSValueConst this_val, int argc,
-                   JSValueConst *argv) {
-  JSValueConst rootDom;
-  rootDom = argv[0];
 
-  globalBrowser->drawObj = parseDivComponent(ctx, rootDom);
-  return JS_UNDEFINED;
-}
 DivComponent *parseDivComponent(JSContext *ctx, JSValue domVal) {
   DivComponent *comp = new DivComponent();
   int32_t x, y, width, height, paddingLeft, fontSize;
@@ -206,11 +198,9 @@ void SimpleBrowser::initJsEngine() {
 
   /* 给global对象添加console能力 */
   js_std_add_helpers(ctx, 0, 0);
-  /* 给global对象添加setRootDOM能力 */
+  /* 添加window对象 */
   JSValue global_obj = JS_GetGlobalObject(ctx);
   JS_SetPropertyStr(ctx, global_obj, "window", global_obj);
-  JS_SetPropertyStr(ctx, global_obj, "setRootDOM",
-                    JS_NewCFunction(ctx, setRootDOM, "setRootDOM", 1));
   globalBrowser = this;
 }
 
@@ -299,23 +289,6 @@ void SimpleBrowser::draw() {
   this->drawObj = domToDiv(this->rootDOM, ctx);
   if (fWindow != nullptr)
     fWindow->inval();
-}
-void SimpleBrowser::initJsPage() {
-  std::string fielname =
-      std::string(std::filesystem::current_path().c_str()) + "/jsGUI/index.js";
-  JSValue fileName = JS_NewString(ctx, fielname.c_str());
-  js_loadScript(ctx, JS_UNDEFINED, 1, &fileName);
-
-  std::cout << "eval_file:" << std::endl;
-  /* 解析运行index.js的生成的quickjs的二进制指令 */
-  // js_std_eval_binary(ctx, qjsc_index, qjsc_index_size, 0);
-  /* 执行掉后面的微任务队列 */
-  JSContext *ctx1;
-  int err;
-  err = JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
-  if (err < 0) {
-    js_std_dump_error(ctx1);
-  }
 }
 
 /* 应该是键盘输入的回调 */

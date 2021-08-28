@@ -27,12 +27,8 @@ public:
   void onBackendCreated() override;
   void onPaint(SkSurface *) override;
   bool onChar(SkUnichar c, skui::ModifierKey modifiers) override;
-  DivComponent *drawObj;
-  DOM* rootDOM;
 
 private:
-  JSRuntime *rt;
-  JSContext *ctx;
   void updateTitle();
 
   sk_app::Window *fWindow;
@@ -45,6 +41,7 @@ private:
   virtual bool onComponentClick(Click *c);
   virtual void initHtmlPage();
   virtual void initJsEngine();
-  virtual void draw();
+  virtual void freeHtmlPage();
+  virtual void freeJsEngine();
 };
 #endif

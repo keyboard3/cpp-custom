@@ -9,11 +9,12 @@
 #define SimpleBrowser_DEFINED
 
 #include "component.h"
+#include "htmlParser.h"
 #include "include/core/SkPoint.h"
 #include "tools/SkMetaData.h"
 #include "tools/sk_app/Application.h"
 #include "tools/sk_app/Window.h"
-#include "htmlParser.h"
+#include "editor_layer.h"
 class SkCanvas;
 
 class SimpleBrowser : public sk_app::Application, sk_app::Window::Layer {
@@ -30,7 +31,7 @@ public:
 
 private:
   void updateTitle();
-
+  EditorLayer addresEditor;
   sk_app::Window *fWindow;
   sk_app::Window::BackendType fBackendType;
 
@@ -39,7 +40,6 @@ private:
                                     skui::ModifierKey modi);
   virtual bool onClick(Click *);
   virtual bool onComponentClick(Click *c);
-  virtual void initHtmlPage();
   virtual void initJsEngine();
   virtual void freeHtmlPage();
   virtual void freeJsEngine();

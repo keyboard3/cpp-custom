@@ -1,13 +1,14 @@
 clean:
-	rm -rf ../../skia/jsGUI out include tools
+	rm -rf ../../skia/jsGUI out include tools modules
 	rm -rf jsGUI/htmlParser.cpp 
 	
 ready:
 	cd jsGUI && ln -s ../../parser/htmlParser.cpp htmlParser.cpp 
-	cd ../../skia && ln -s ../cpp-custom/skia/jsGUI jsGUI 
 	ln -s ../../skia/out/Clang out
 	ln -s ../../skia/include include
+	ln -s ../../skia/modules modules
 	ln -s ../../skia/tools tools
+	cd ../../skia && ln -s ../cpp-custom/skia/jsGUI jsGUI 
 
 donwloadSkia:
 	cd ../../ && git clone https://skia.googlesource.com/skia.git && cd skia && python2 tools/git-sync-deps

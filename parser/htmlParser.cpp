@@ -186,10 +186,9 @@ void parseHtmlToDOM(string content, DOM *dom) {
   parseTag("wrapper", dom);
   getNextToken();
 }
-
-DOM *parseHtmlByPath(string filpath) {
+DOM *parseHtml(string content) {
   initHtml();
-  html = getFileContent(filpath);
+  html = content;
   hit = html.begin();
   getNextToken(); // eat <html
   string rootTag = "html";
@@ -201,6 +200,20 @@ DOM *parseHtmlByPath(string filpath) {
   }
   return nullptr;
 }
+// DOM *parseHtmlByPath(string filpath) {
+//   initHtml();
+//   html = getFileContent(filpath);
+//   hit = html.begin();
+//   getNextToken(); // eat <html
+//   string rootTag = "html";
+//   if (CurTok == tok_beginTag && TagStr == rootTag) {
+//     DOM *root = new DOM(rootTag);
+//     parseTag(rootTag, root);
+//     getNextToken();
+//     return root;
+//   }
+//   return nullptr;
+// }
 
 // int main(int argc, char *argv[]) {
 //   DOM *root = getRoot("index.html");

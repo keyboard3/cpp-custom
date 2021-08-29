@@ -40,6 +40,7 @@ public:
     }
   }
 };
-DOM *parseHtmlByPath(string filpath);
+DOM *parseHtml(string content);
 void parseHtmlToDOM(string content, DOM *dom);
+string getFileContent(string filepath);
 #endif

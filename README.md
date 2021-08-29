@@ -45,8 +45,8 @@ cmake .. && cmake --build .
         - 支持解析 javascript 标签运行
         - 支持标签绑定 onclick 事件
         - 支持 document.getElementById 读取指定dom对象
-        - 支持 dom 对象上 width,height 属性以及 setAttribute 重渲染
-        - 支持 dom 的 innerHtml 属性重渲染
+        - 支持 dom 对象上 width,height,innerHtml 属性以及 setAttribute 重渲染
+        - 支持地址栏 file:// 协议访问重刷新
 - 简单 TCP 通信
     - [客户端 socket](./socket/tcp-socket-client.cpp)
     - [服务端 socket](./socket/tcp-socket-server.cpp)

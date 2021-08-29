@@ -7,6 +7,7 @@
 
 #include "SimpleBrowser.h"
 #include "component.h"
+#include "editor_layer.h"
 #include "evalJs.h"
 #include "filesystem"
 #include "htmlParser.h"
@@ -40,10 +41,21 @@ JSContext *ctx;
 DOM *rootDOM;
 DivComponent *rootDrawObj;
 sk_app::Window *globalWindow;
+int barHeight = 40;
+int canvasTop = barHeight;
+string address;
+void loadUri(string uri);
 Application *Application::Create(int argc, char **argv, void *platformData) {
   return new SimpleBrowser(argc, argv, platformData);
 }
 
+void onSearchChar(char ch) {
+  if (ch == '\n') {
+    loadUri(address);
+    return;
+  }
+  address += ch;
+}
 SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
     : fBackendType(Window::kRaster_BackendType) //(Window::kNativeGL_BackendType
 {
@@ -56,13 +68,23 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
   SkGraphics::Init();
   globalWindow = fWindow = Window::CreateNativeWindow(platformData);
   fWindow->setRequestedDisplayParams(DisplayParams());
-
   // 向fWindow绘制这一层，绘制以及事件都会callback回调
   fWindow->pushLayer(this);
   // 初始化完成，attach会触发的onBackendCreated
   fWindow->attach(fBackendType);
+  //初始化Html页面
+  address = "file://" + string(filesystem::current_path().c_str()) +
+                    "/jsGUI/index.html";
+  loadUri(address);
 
-  initHtmlPage();
+  //添加地址栏
+  addresEditor.fEditor.insert(Editor::TextPosition{0, 0}, address.c_str(),
+                             address.length());
+  addresEditor.setFont();
+  addresEditor.setCharCallback(onSearchChar);
+  fWindow->pushLayer(&addresEditor);
+  addresEditor.onResize(fWindow->width(), barHeight);
+  addresEditor.fEditor.paint(nullptr, Editor::PaintOpts());
 }
 
 /* 析构函数 */
@@ -107,7 +129,8 @@ void SimpleBrowser::onPaint(SkSurface *surface) {
     // div有背景就画一个矩形
     if (div->background != 0) {
       paint.setColor(div->background);
-      SkRect rect = SkRect::MakeXYWH(div->x, div->y, div->width, div->height);
+      SkRect rect =
+          SkRect::MakeXYWH(div->x, div->y + canvasTop, div->width, div->height);
       canvas->drawRect(rect, paint);
     }
     if (div->innerText.length() != 0) {
@@ -116,8 +139,9 @@ void SimpleBrowser::onPaint(SkSurface *surface) {
       // std::cout << "onPaint:innerText:" << div->innerText << std::endl;
       canvas->drawSimpleText(div->innerText.c_str(), div->innerText.length(),
                              SkTextEncoding::kUTF8, div->x + div->paddingLeft,
-                             div->y + div->height / 2 + div->fontSize / 2, font,
-                             paint);
+                             canvasTop + div->y + div->height / 2 +
+                                 div->fontSize / 2,
+                             font, paint);
     }
     for (auto childDiv : div->children)
       divs.push_back(childDiv);
@@ -137,7 +161,6 @@ void SimpleBrowser::onIdle() {
 
 /* 应该是键盘输入的回调 */
 bool SimpleBrowser::onChar(SkUnichar c, skui::ModifierKey modifiers) {
-  std::cout << "onChar" << c << std::endl;
   if (' ' == c) {
     fBackendType = Window::kRaster_BackendType == fBackendType
                        ? Window::kRaster_BackendType // kNativeGL_BackendType
@@ -222,9 +245,9 @@ Click *SimpleBrowser::onFindClickHandler(SkScalar x, SkScalar y,
   DivComponent *findDiv = nullptr;
   for (auto div : divs) {
     bool isOuter = false;
-    if (x < div->x || y < div->y)
+    if (x < div->x || y < div->y + canvasTop)
       isOuter = true;
-    if (x > div->x + div->width || y > div->y + div->height)
+    if (x > div->x + div->width || y > div->y + div->height + canvasTop)
       isOuter = true;
     if (!isOuter) {
       findDiv = div;
@@ -272,13 +295,16 @@ void SimpleBrowser::freeJsEngine() {
   JS_FreeRuntime(rt);
 }
 
-void SimpleBrowser::initHtmlPage() {
+void loadUri(string uri) {
   idDomMap = new map<string, DOM *>();
-  string filename =
-      string(filesystem::current_path().c_str()) + "/jsGUI/index.html";
-  rootDOM = parseHtmlByPath(filename);
-  readyJSDocument();
-  drawRoot();
+  cout << "loadUri:" << uri << endl;
+  if (uri.find("file://") != std::string::npos) {
+    rootDOM = parseHtml(getFileContent(uri.substr(7)));
+    readyJSDocument();
+    drawRoot();
+    return;
+  }
+  perror("无效的uri\n");
 }
 
 void SimpleBrowser::freeHtmlPage() {

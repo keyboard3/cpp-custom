@@ -8,6 +8,7 @@ test_app("jsGUI") {
     ":sk_app",
     ":skia",
     ":tool_utils",
+    "modules/skplaintexteditor:editor_lib"
   ]
   include_dirs = [ "/usr/local/include"]
   libs = ["/usr/local/lib/quickjs/libquickjs.a"]

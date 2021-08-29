@@ -40,8 +40,7 @@ JSContext *ctx;
 DOM *rootDOM;
 DivComponent *rootDrawObj;
 sk_app::Window *globalWindow;
-Application *Application::Create(int argc, char **argv, void *platformData)
-{
+Application *Application::Create(int argc, char **argv, void *platformData) {
   return new SimpleBrowser(argc, argv, platformData);
 }
 
@@ -67,16 +66,14 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
 }
 
 /* 析构函数 */
-SimpleBrowser::~SimpleBrowser()
-{
+SimpleBrowser::~SimpleBrowser() {
   freeJsEngine();
   freeHtmlPage();
   fWindow->detach();
   delete fWindow;
 }
 /* 修改窗口的window的title */
-void SimpleBrowser::updateTitle()
-{
+void SimpleBrowser::updateTitle() {
   std::cout << "updateTitle" << std::endl;
   if (!fWindow || fWindow->sampleCount() <= 1)
     return;
@@ -87,8 +84,7 @@ void SimpleBrowser::updateTitle()
   fWindow->setTitle(title.c_str());
 }
 /* attach完成之后会触发调用 */
-void SimpleBrowser::onBackendCreated()
-{
+void SimpleBrowser::onBackendCreated() {
   std::cout << "onBackendCreated" << std::endl;
   this->updateTitle();
   fWindow->show();
@@ -96,8 +92,7 @@ void SimpleBrowser::onBackendCreated()
   fWindow->inval();
 }
 
-void SimpleBrowser::onPaint(SkSurface *surface)
-{
+void SimpleBrowser::onPaint(SkSurface *surface) {
   auto canvas = surface->getCanvas();
   canvas->clear(SK_ColorWHITE);
   SkPaint paint;
@@ -107,18 +102,15 @@ void SimpleBrowser::onPaint(SkSurface *surface)
   std::list<DivComponent *> divs;
   if (rootDrawObj != nullptr)
     divs.push_back(rootDrawObj);
-  for (auto div : divs)
-  {
+  for (auto div : divs) {
     // std::cout << "渲染 div" << std::endl;
     // div有背景就画一个矩形
-    if (div->background != 0)
-    {
+    if (div->background != 0) {
       paint.setColor(div->background);
       SkRect rect = SkRect::MakeXYWH(div->x, div->y, div->width, div->height);
       canvas->drawRect(rect, paint);
     }
-    if (div->innerText.length() != 0)
-    {
+    if (div->innerText.length() != 0) {
       font.setSize(div->fontSize);
       paint.setColor(div->color);
       // std::cout << "onPaint:innerText:" << div->innerText << std::endl;
@@ -132,8 +124,7 @@ void SimpleBrowser::onPaint(SkSurface *surface)
   }
 }
 
-void SimpleBrowser::onIdle()
-{
+void SimpleBrowser::onIdle() {
   /*
     修改fwindow的 fIsContentInvalidated
     为TRUE,在loop没有事件流之后，就会触发PaintWindows完成重绘
@@ -145,11 +136,9 @@ void SimpleBrowser::onIdle()
 }
 
 /* 应该是键盘输入的回调 */
-bool SimpleBrowser::onChar(SkUnichar c, skui::ModifierKey modifiers)
-{
+bool SimpleBrowser::onChar(SkUnichar c, skui::ModifierKey modifiers) {
   std::cout << "onChar" << c << std::endl;
-  if (' ' == c)
-  {
+  if (' ' == c) {
     fBackendType = Window::kRaster_BackendType == fBackendType
                        ? Window::kRaster_BackendType // kNativeGL_BackendType
                        : Window::kRaster_BackendType;
@@ -161,22 +150,18 @@ bool SimpleBrowser::onChar(SkUnichar c, skui::ModifierKey modifiers)
 
 /* 从mouse事件中识别出点击事件 */
 bool SimpleBrowser::onMouse(int x, int y, skui::InputState clickState,
-                            skui::ModifierKey modifierKeys)
-{
+                            skui::ModifierKey modifierKeys) {
   SkPoint point = SkPoint::Make(x, y);
-  auto dispatch = [this](Click *c)
-  {
+  auto dispatch = [this](Click *c) {
     return c->fHasFunc ? this->onComponentClick(c) : this->onClick(c);
   };
 
-  switch (clickState)
-  {
+  switch (clickState) {
   case skui::InputState::kDown:
     std::cout << "kDown:" << x << " " << y << " 寻找div" << std::endl;
     fClick = nullptr;
     fClick.reset(this->onFindClickHandler(point.x(), point.y(), modifierKeys));
-    if (!fClick)
-    {
+    if (!fClick) {
       return false;
     }
     fClick->fPrev = fClick->fCurr = fClick->fOrig = point;
@@ -184,8 +169,7 @@ bool SimpleBrowser::onMouse(int x, int y, skui::InputState clickState,
     fClick->fModifierKeys = modifierKeys;
     return true;
   case skui::InputState::kMove:
-    if (fClick)
-    {
+    if (fClick) {
       fClick->fPrev = fClick->fCurr;
       fClick->fCurr = point;
       fClick->fState = skui::InputState::kMove;
@@ -194,8 +178,7 @@ bool SimpleBrowser::onMouse(int x, int y, skui::InputState clickState,
     return false;
   case skui::InputState::kUp:
     std::cout << "kUp:" << x << " " << y << std::endl;
-    if (fClick)
-    {
+    if (fClick) {
       fClick->fPrev = fClick->fCurr;
       fClick->fCurr = point;
       fClick->fState = skui::InputState::kUp;
@@ -214,8 +197,7 @@ bool SimpleBrowser::onMouse(int x, int y, skui::InputState clickState,
   return false;
 }
 /* 组件响应点击事件 */
-bool SimpleBrowser::onComponentClick(Click *c)
-{
+bool SimpleBrowser::onComponentClick(Click *c) {
   std::cout << "组件响应点击事件:" << c->fCurr.fX << "," << c->fCurr.fY
             << std::endl;
   JSValue ret = JS_Call(ctx, c->fFunc, c->fthis, 0, NULL);
@@ -224,8 +206,7 @@ bool SimpleBrowser::onComponentClick(Click *c)
   fWindow->inval();
 }
 /* 当没找到组件响应点击事件的时候，全局响应点击事件 */
-bool SimpleBrowser::onClick(Click *c)
-{
+bool SimpleBrowser::onClick(Click *c) {
   std::cout << "无人响应，则全局响应点击事件:" << c->fCurr.fX << ","
             << c->fCurr.fY << std::endl;
   rootDrawObj->innerText = "global response";
@@ -234,30 +215,25 @@ bool SimpleBrowser::onClick(Click *c)
 }
 /* 从点击事件中找到相应view上注册的点击回调 */
 Click *SimpleBrowser::onFindClickHandler(SkScalar x, SkScalar y,
-                                         skui::ModifierKey modi)
-{
+                                         skui::ModifierKey modi) {
   std::list<DivComponent *> divs;
   if (rootDrawObj != nullptr)
     divs.push_back(rootDrawObj);
   DivComponent *findDiv = nullptr;
-  for (auto div : divs)
-  {
+  for (auto div : divs) {
     bool isOuter = false;
     if (x < div->x || y < div->y)
       isOuter = true;
     if (x > div->x + div->width || y > div->y + div->height)
       isOuter = true;
-    if (!isOuter)
-    {
+    if (!isOuter) {
       findDiv = div;
     }
     for (auto childDiv : div->children)
       divs.push_back(childDiv);
   }
-  if (findDiv != nullptr)
-  {
-    if (findDiv->onClick.tag == JS_TAG_UNDEFINED)
-    {
+  if (findDiv != nullptr) {
+    if (findDiv->onClick.tag == JS_TAG_UNDEFINED) {
       return new Click();
     }
     Click *click = new Click(findDiv->clickThis, findDiv->onClick);
@@ -281,8 +257,7 @@ JSValue readyJSDocument();
 void drawRoot();
 void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx);
 
-void SimpleBrowser::initJsEngine()
-{
+void SimpleBrowser::initJsEngine() {
   rt = JS_NewRuntime();
   ctx = JS_NewCustomContext(rt);
 
@@ -292,42 +267,36 @@ void SimpleBrowser::initJsEngine()
   JS_SetPropertyStr(ctx, global_obj, "window", global_obj);
 }
 
-void SimpleBrowser::freeJsEngine()
-{
+void SimpleBrowser::freeJsEngine() {
   JS_FreeContext(ctx);
   JS_FreeRuntime(rt);
 }
 
-void SimpleBrowser::initHtmlPage()
-{
+void SimpleBrowser::initHtmlPage() {
   idDomMap = new map<string, DOM *>();
-  string filename = string(filesystem::current_path().c_str()) +
-                    "/jsGUI/index.html";
+  string filename =
+      string(filesystem::current_path().c_str()) + "/jsGUI/index.html";
   rootDOM = parseHtml(filename);
   readyJSDocument();
   drawRoot();
 }
 
-void SimpleBrowser::freeHtmlPage()
-{
+void SimpleBrowser::freeHtmlPage() {
   //释放申请的资源
 }
 
-void drawRoot()
-{
+void drawRoot() {
   rootDrawObj = domToDiv(rootDOM, ctx);
   if (rootDOM->children->type != node_list)
     return;
   //将根节点html内容下的子节点，递归解析出绘图树
-  for (auto child : *rootDOM->children->list)
-  {
+  for (auto child : *rootDOM->children->list) {
     parseDOM(rootDrawObj, child, ctx);
   }
   globalWindow->inval();
 }
 
-JSContext *JS_NewCustomContext(JSRuntime *rt)
-{
+JSContext *JS_NewCustomContext(JSRuntime *rt) {
   JSContext *ctx = JS_NewContextRaw(rt);
   if (!ctx)
     return NULL;
@@ -346,11 +315,11 @@ JSContext *JS_NewCustomContext(JSRuntime *rt)
 /*
 给element提供根据key来设置attribute属性值的能力
 */
-JSValue js_setAttribute(JSContext *ctx, JSValueConst this_val,
-                        int argc, JSValueConst *argv)
-{
+JSValue js_setAttribute(JSContext *ctx, JSValueConst this_val, int argc,
+                        JSValueConst *argv) {
   string attributeKey = JS_ToCString(ctx, argv[0]);
   string value = JS_ToCString(ctx, argv[1]);
+  cout << "===js_setAttribute====" << attributeKey << " " << value << endl;
   string id = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "id"));
   if (idDomMap->find(id) == idDomMap->end())
     return JS_UNDEFINED;
@@ -365,9 +334,8 @@ JSValue js_setAttribute(JSContext *ctx, JSValueConst this_val,
 /*
 给element提供根据key获取attribute属性值的能力
 */
-JSValue js_getAttribute(JSContext *ctx, JSValueConst this_val,
-                        int argc, JSValueConst *argv)
-{
+JSValue js_getAttribute(JSContext *ctx, JSValueConst this_val, int argc,
+                        JSValueConst *argv) {
   string attributeKey = JS_ToCString(ctx, argv[0]);
   string id = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "id"));
   if (idDomMap->find(id) == idDomMap->end())
@@ -385,58 +353,68 @@ JSValue js_getAttribute(JSContext *ctx, JSValueConst this_val,
 并将这个c++ DOM对象映射成js的element对象。给这个element上提供如下方法
 setAttribute,getAttribute, innerText,innerHtml
 */
-JSValue js_getElementById(JSContext *ctx, JSValueConst this_val,
-                          int argc, JSValueConst *argv)
-{
+JSValue js_getElementById(JSContext *ctx, JSValueConst this_val, int argc,
+                          JSValueConst *argv) {
   string id = JS_ToCString(ctx, argv[0]);
   if (idDomMap->find(id) == idDomMap->end())
     return JS_UNDEFINED;
 
   DOM *dom = (*idDomMap)[id];
-  auto getStrValue = [&](string key) -> const char *
-  {
+  auto getStrValue = [&](string key) -> const char * {
     if (dom->attributes.find(key) != dom->attributes.end())
       return dom->attributes[key].c_str();
     return "";
   };
   JSValue element_obj = JS_NewObject(ctx);
-  JS_SetPropertyStr(ctx, element_obj, "getAttribute",
-                    JS_NewCFunction(ctx, js_getAttribute, "getAttribute", 1));
-  JS_SetPropertyStr(ctx, element_obj, "setAttribute",
-                    JS_NewCFunction(ctx, js_setAttribute, "setAttribute", 1));
+  JSValue jsGetAttribute =
+      JS_NewCFunction(ctx, js_getAttribute, "getAttribute", 1);
+  JSValue jsSetAttribute =
+      JS_NewCFunction(ctx, js_setAttribute, "setAttribute", 1);
+  auto initAttribute = [&](string key) {
+    JSAtom atom = JS_NewAtom(ctx, key.c_str());
+    JSValue jsSetAttribute = JS_NewCFunction2(
+        ctx, js_setAttribute, ("set " + key).c_str(), 1, JS_CFUNC_setter, 0);
+    JS_DefinePropertyGetSet(ctx, element_obj, atom, jsGetAttribute,
+                            jsSetAttribute, JS_PROP_NORMAL);
+    JS_FreeAtom(ctx, atom);
+  };
+  JS_SetPropertyStr(ctx, element_obj, "getAttribute", jsGetAttribute);
+  JS_SetPropertyStr(ctx, element_obj, "setAttribute", jsSetAttribute);
   JS_SetPropertyStr(ctx, element_obj, "id", JS_NewString(ctx, id.c_str()));
-  JS_SetPropertyStr(ctx, element_obj, "width", JS_NewString(ctx, getStrValue("width")));
-  JS_SetPropertyStr(ctx, element_obj, "height", JS_NewString(ctx, getStrValue("height")));
-  JS_SetPropertyStr(ctx, element_obj, "x", JS_NewString(ctx, getStrValue("x")));
-  JS_SetPropertyStr(ctx, element_obj, "y", JS_NewString(ctx, getStrValue("y")));
+  JS_SetPropertyStr(ctx, element_obj, "width",
+                    JS_NewString(ctx, getStrValue("width")));
+  JS_SetPropertyStr(ctx, element_obj, "height",
+                    JS_NewString(ctx, getStrValue("height")));
+  JS_SetPropertyStr(ctx, element_obj, "innerText",
+                    JS_NewString(ctx, dom->children->strVal.c_str()));
+
+  //设置width赋值监听
+  initAttribute("width");
+  initAttribute("height");
   return element_obj;
 }
 
-JSValue readyJSDocument()
-{
+JSValue readyJSDocument() {
   JSValue document_obj = JS_NewObject(ctx);
-  JS_SetPropertyStr(ctx, document_obj, "getElementById",
-                    JS_NewCFunction(ctx, js_getElementById, "getElementById", 1));
+  JS_SetPropertyStr(
+      ctx, document_obj, "getElementById",
+      JS_NewCFunction(ctx, js_getElementById, "getElementById", 1));
 
   JSValue global_obj = JS_GetGlobalObject(ctx);
   JS_SetPropertyStr(ctx, global_obj, "document", document_obj);
 }
 
-DivComponent *domToDiv(DOM *dom, JSContext *ctx)
-{
+DivComponent *domToDiv(DOM *dom, JSContext *ctx) {
   DivComponent *div = new DivComponent();
-  auto hasAttribute = [&](string key) -> bool
-  {
+  auto hasAttribute = [&](string key) -> bool {
     return dom->attributes.find(key) != dom->attributes.end();
   };
-  auto getNumValue = [&](string key, int32_t defVal) -> int32_t
-  {
+  auto getNumValue = [&](string key, int32_t defVal) -> int32_t {
     if (hasAttribute(key))
       return stoi(dom->attributes[key], nullptr, defVal);
     return defVal;
   };
-  auto getStrValue = [&](string key) -> string
-  {
+  auto getStrValue = [&](string key) -> string {
     if (hasAttribute(key))
       return dom->attributes[key];
     return "";
@@ -452,16 +430,13 @@ DivComponent *domToDiv(DOM *dom, JSContext *ctx)
   div->color = getColor(getStrValue("color"), SK_ColorBLACK);
 
   //给onclick属性上构建一个匿名函数，绑定到绘图对象上
-  if (hasAttribute("onclick"))
-  {
+  if (hasAttribute("onclick")) {
     string clickFun = "()=>{" + dom->attributes["onclick"] + "}";
-    printf("onclick-js:\n%s\n", clickFun.c_str());
     JSValue ret =
         JS_Eval(ctx, clickFun.c_str(), clickFun.length(),
                 (dom->name + "_onclick").c_str(), JS_EVAL_TYPE_GLOBAL);
     JSValue global_obj = JS_GetGlobalObject(ctx);
-    if (ret.tag == JS_UNDEFINED.tag)
-    {
+    if (ret.tag == JS_UNDEFINED.tag) {
       perror("no function found\n");
       return div;
     }
@@ -475,11 +450,9 @@ DivComponent *domToDiv(DOM *dom, JSContext *ctx)
   return div;
 }
 
-void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx)
-{
+void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx) {
   //遇到js标签执行js代码
-  if (curDOM->name == "javascript")
-  {
+  if (curDOM->name == "javascript") {
     printf("<javascript>:\n%s\n", curDOM->children->strVal.c_str());
     JS_Eval(ctx, curDOM->children->strVal.c_str(),
             curDOM->children->strVal.length(), "<javascript>",
@@ -488,8 +461,7 @@ void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx)
     JSContext *ctx1;
     int err;
     err = JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
-    if (err < 0)
-    {
+    if (err < 0) {
       js_std_dump_error(ctx1);
     }
     return;
@@ -497,36 +469,30 @@ void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx)
   //构建绘图树
   DivComponent *dom = domToDiv(curDOM, ctx);
   //如果是本文节点设置绘制文本
-  if (curDOM->children->type == node_str)
-  {
+  if (curDOM->children->type == node_str) {
     dom->innerText = curDOM->children->strVal;
     parentDiv->children.push_back(dom);
     return;
   }
   //如果是dom列表就递归解析到绘图节点上
-  for (auto child : *curDOM->children->list)
-  {
+  for (auto child : *curDOM->children->list) {
     parseDOM(dom, child, ctx);
   }
   parentDiv->children.push_back(dom);
 }
 
-SkColor getColor(JSContext *ctx, JSValue colorVal)
-{
+SkColor getColor(JSContext *ctx, JSValue colorVal) {
   std::string strColor;
-  if (JS_IsString(colorVal))
-  {
+  if (JS_IsString(colorVal)) {
     strColor = JS_ToCString(ctx, colorVal);
   }
   return getColor(strColor);
 }
 
-SkColor getColor(string strColor)
-{
+SkColor getColor(string strColor) {
   return getColor(strColor, SK_ColorTRANSPARENT);
 }
-SkColor getColor(string strColor, SkColor defColor)
-{
+SkColor getColor(string strColor, SkColor defColor) {
   if (strColor == "transparent")
     return SK_ColorTRANSPARENT;
   if (strColor == "black")

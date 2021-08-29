@@ -1,3 +1,4 @@
+#include "htmlParser.h"
 #include "fstream"
 #include "iostream"
 #include "list"
@@ -19,14 +20,18 @@ enum Token {
 static string gContent;      //读取的html内容
 static string::iterator git; //迭代指针
 
-static string IdentifierStr; //属性名
-static string StrVal;        //属性值
-static string TagStr;        //标签名
+static string IdentifierStr;  //属性名
+static string StrVal;         //属性值
+static string TagStr;         //标签名
+static char html[1024 * 100]; //提前申请html 100kb的容量
+static int curTokIndex = 0;
 static int LastChar = ' ';
 static int getStrChar() {
   if (git == gContent.end())
     return EOF;
   int cur = *git;
+  html[curTokIndex] = cur;
+  curTokIndex++;
   git++;
   return cur;
 }
@@ -62,8 +67,10 @@ static int gettok() {
     }
     //标签后面应该是标识符
     int idType = gettok();
-    if (idType != tok_identifier)
-      throw "xml is error";
+    if (idType != tok_identifier) {
+      perror("html is error");
+      return tok_eof;
+    }
     TagStr = IdentifierStr;
     if (isEndTag) {
       LastChar = getStrChar(); // eat >
@@ -83,107 +90,77 @@ static int gettok() {
 static int CurTok;
 static int getNextToken() { return CurTok = gettok(); }
 
-enum NodeType { node_num = 1, node_str = 2, node_list = 3 };
-class Node;
-class DOM {
-public:
-  string name;
-  map<string, Node *> attributes;
-  Node *children;
-  DOM(string name) : name(name) {}
-};
-class Node {
-public:
-  Node(string strVal) : strVal(strVal) { type = node_str; }
-  Node(list<DOM *> *list) : list(list) { type = node_list; }
-  NodeType type;
-  string strVal;
-  list<DOM *> *list;
-  void print(string tab) {
-    if (type == node_str) {
-      printf("%s%s", tab.c_str(), strVal.c_str());
-      return;
-    }
-    for (auto it : *list) {
-      printf("%s TAG %s:", tab.c_str(), it->name.c_str());
-      for (auto attriute : it->attributes) {
-        printf("%s %s=", tab.c_str(), attriute.first.c_str());
-        attriute.second->print("");
-      }
-      printf("\n");
-      it->children->print(tab + "\t");
-      printf("\n");
-    }
-  }
-};
-
 /*
-  解析内容xml，将解析结果放到slot上
+  解析内容，将解析结果放到slot上
 */
 void parseTag(string parentName, DOM *dom) {
-  if (CurTok != tok_beginTag)
-    throw "must beigin tag";
+  if (CurTok != tok_beginTag) {
+    perror("must beigin tag");
+    return;
+  }
+  int tagContentStart = curTokIndex;
   // eat beginTag and attributes and >
   getNextToken();
   while (CurTok != '>' && CurTok != tok_eof) {
-    if (CurTok != tok_identifier)
-      throw "attribute error";
+    if (CurTok != tok_identifier) {
+      perror("attribute error");
+      return;
+    }
     string attributeName = IdentifierStr;
     getNextToken(); // eat tok_identifier
     if (CurTok != '=') {
-      dom->attributes.insert({attributeName, new Node("true")}); //默认true =1
+      dom->attributes.insert({attributeName, "true"}); //默认true =1
       continue;
     }
     getNextToken(); // eat =
-    if (CurTok != tok_string)
-      throw dom->name + " attribute " + attributeName + " missing value";
-    dom->attributes.insert({attributeName, new Node(StrVal)});
+    if (CurTok != tok_string) {
+      string errMsg =
+          dom->name + " attribute " + attributeName + " missing value";
+      perror(errMsg.c_str());
+      return;
+    }
+    dom->attributes.insert({attributeName, StrVal});
+    //重设tagStartIndex
+    tagContentStart = curTokIndex;
     getNextToken(); // eat tok_string
   }
 
-  if (CurTok != '>')
-    throw "tag error";
+  if (CurTok != '>') {
+    perror("tag error");
+    return;
+  }
   getNextToken(); // eat >
 
   //解释标签内容
   list<DOM *> *child = new list<DOM *>();
-  string content;
   while (CurTok != tok_eof &&
          !(CurTok == tok_closeTag && TagStr == parentName)) {
     //将非javascript标签下归档处理
     if (CurTok == tok_beginTag) {
       if (parentName == "javascript") {
-        content += "<" + TagStr;
         getNextToken();
         continue;
       }
+
       DOM *dom = new DOM(TagStr);
       parseTag(TagStr, dom);
+      getNextToken(); // eat closeTag
       child->push_back(dom);
       continue;
     }
-    if (CurTok == tok_closeTag) {
-      if (parentName == "javascript") {
-        content += "</" + TagStr + ">";
-        getNextToken();
-        continue;
-      }
-      getNextToken(); // eat closeTag
-      continue;
-    }
-    if (CurTok == tok_string)
-      content += StrVal;
-    else if (CurTok == tok_identifier)
-      content += IdentifierStr;
-    else
-      content += CurTok;
     getNextToken();
   }
+  int tagContentEnd = curTokIndex - parentName.length() - 4;
   // dom->children = new Node(child);
-  if (child->size() > 0)
+  if (child->size() > 0) {
     dom->children = new Node(child);
-  else
+  } else {
+    string content =
+        string(&html[tagContentStart], tagContentEnd - tagContentStart);
     dom->children = new Node(content);
+  }
+  dom->innerHtml =
+      string(&html[tagContentStart], tagContentEnd - tagContentStart);
 }
 
 string getFileContent(string filepath) {
@@ -213,9 +190,9 @@ DOM *parseHtml(string filpath) {
   return nullptr;
 }
 
-int main(int argc, char *argv[]) {
-  DOM *root = parseHtml("index.html");
-  if (root != nullptr)
-    root->children->print("");
-  return 0;
-}
+// int main(int argc, char *argv[]) {
+//   DOM *root = getRoot("index.html");
+//   if (root != nullptr)
+//     root->children->print("");
+//   return 0;
+// }

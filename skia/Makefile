@@ -1,7 +1,9 @@
 clean:
 	rm -rf ../../skia/jsGUI out include tools
+	rm -rf jsGUI/htmlParser.cpp 
 	
 ready:
+	cd jsGUI && ln -s ../../parser/htmlParser.cpp htmlParser.cpp 
 	cd ../../skia && ln -s ../cpp-custom/skia/jsGUI jsGUI 
 	ln -s ../../skia/out/Clang out
 	ln -s ../../skia/include include

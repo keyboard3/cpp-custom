@@ -12,6 +12,7 @@ class DOM {
 public:
   string name;
   map<string, string> attributes;
+  string innerHtml;
   Node *children;
   DOM(string name) : name(name) {}
 };

@@ -17,22 +17,27 @@ enum Token {
 };
 
 // gettok()拿到tok类型之后，数据从这里拿
-static string gContent;      //读取的html内容
-static string::iterator git; //迭代指针
+static string html;          //读取的html内容
+static string::iterator hit; //迭代指针
 
-static string IdentifierStr;  //属性名
-static string StrVal;         //属性值
-static string TagStr;         //标签名
-static char html[1024 * 100]; //提前申请html 100kb的容量
+static string IdentifierStr; //属性名
+static string StrVal;        //属性值
+static string TagStr;        //标签名
 static int curTokIndex = 0;
 static int LastChar = ' ';
+
+static void initHtml() {
+  html = "";
+  IdentifierStr = StrVal = TagStr = "";
+  curTokIndex = 0;
+  LastChar = ' ';
+}
 static int getStrChar() {
-  if (git == gContent.end())
+  if (hit == html.end())
     return EOF;
-  int cur = *git;
-  html[curTokIndex] = cur;
+  int cur = *hit;
   curTokIndex++;
-  git++;
+  hit++;
   return cur;
 }
 static int gettok() {
@@ -151,7 +156,6 @@ void parseTag(string parentName, DOM *dom) {
     getNextToken();
   }
   int tagContentEnd = curTokIndex - parentName.length() - 4;
-  // dom->children = new Node(child);
   if (child->size() > 0) {
     dom->children = new Node(child);
   } else {
@@ -174,11 +178,19 @@ string getFileContent(string filepath) {
   }
   return content;
 }
+void parseHtmlToDOM(string content, DOM *dom) {
+  initHtml();
+  html = "<wrapper>" + content + "</wrapper>";
+  hit = html.begin();
+  getNextToken();
+  parseTag("wrapper", dom);
+  getNextToken();
+}
 
-DOM *parseHtml(string filpath) {
-  gContent = getFileContent(filpath);
-  git = gContent.begin();
-
+DOM *parseHtmlByPath(string filpath) {
+  initHtml();
+  html = getFileContent(filpath);
+  hit = html.begin();
   getNextToken(); // eat <html
   string rootTag = "html";
   if (CurTok == tok_beginTag && TagStr == rootTag) {

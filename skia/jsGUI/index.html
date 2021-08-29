@@ -1,14 +1,12 @@
 <html width="400" height="800">
 <div id="first" width="200" height="200" color="black" background="yellow" fontSize="28"
-    onclick="console.log('inline');say();">hello</div>
-<div width="200" height="200" x="200" y="300" fontSize="36">hello 2</div>
+    onclick="console.log('inline');say();">click me</div>
 <javascript>
     function say(){
         ele=window.document.getElementById("first");
-        ele.setAttribute("paddingLeft","20");
-        ele.setAttribute("color","red");
-        ele.setAttribute("fontSize","48");
-        ele.color="blue";
+        ele.width=400;
+        ele.setAttribute('background',"dkgray");
+        ele.innerHtml='<div fontSize="28" y="100" x="50">hello</div><div fontSize="28" x="140" color="red" y="100">world</div>';
     };
 </javascript>
 

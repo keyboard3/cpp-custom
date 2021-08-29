@@ -276,7 +276,7 @@ void SimpleBrowser::initHtmlPage() {
   idDomMap = new map<string, DOM *>();
   string filename =
       string(filesystem::current_path().c_str()) + "/jsGUI/index.html";
-  rootDOM = parseHtml(filename);
+  rootDOM = parseHtmlByPath(filename);
   readyJSDocument();
   drawRoot();
 }
@@ -313,13 +313,30 @@ JSContext *JS_NewCustomContext(JSRuntime *rt) {
 }
 
 /*
+给element的html设置内容
+*/
+JSValue js_setInnerHtml(JSContext *ctx, JSValueConst this_val, int argc,
+                        JSValueConst *argv) {
+  string attributeKey = JS_ToCString(ctx, argv[0]);
+  string htmlStr = JS_ToCString(ctx, argv[1]);
+  string id = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "id"));
+  if (idDomMap->find(id) == idDomMap->end())
+    return JS_UNDEFINED;
+
+  DOM *dom = (*idDomMap)[id];
+  dom->innerHtml = htmlStr;
+
+  parseHtmlToDOM(dom->innerHtml, dom);
+  drawRoot();
+  return JS_UNDEFINED;
+}
+/*
 给element提供根据key来设置attribute属性值的能力
 */
 JSValue js_setAttribute(JSContext *ctx, JSValueConst this_val, int argc,
                         JSValueConst *argv) {
   string attributeKey = JS_ToCString(ctx, argv[0]);
   string value = JS_ToCString(ctx, argv[1]);
-  cout << "===js_setAttribute====" << attributeKey << " " << value << endl;
   string id = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "id"));
   if (idDomMap->find(id) == idDomMap->end())
     return JS_UNDEFINED;
@@ -359,6 +376,7 @@ JSValue js_getElementById(JSContext *ctx, JSValueConst this_val, int argc,
   if (idDomMap->find(id) == idDomMap->end())
     return JS_UNDEFINED;
 
+  //给基本属性设置赋值操作时，更新UI
   DOM *dom = (*idDomMap)[id];
   auto getStrValue = [&](string key) -> const char * {
     if (dom->attributes.find(key) != dom->attributes.end())
@@ -366,31 +384,49 @@ JSValue js_getElementById(JSContext *ctx, JSValueConst this_val, int argc,
     return "";
   };
   JSValue element_obj = JS_NewObject(ctx);
+  auto initProperty = [&](string key) {
+    string reKey = "_" + key;
+    if (key == "innerHtml") {
+      JS_SetPropertyStr(ctx, element_obj, reKey.c_str(),
+                        JS_NewString(ctx, dom->innerHtml.c_str()));
+    } else {
+      JS_SetPropertyStr(ctx, element_obj, reKey.c_str(),
+                        JS_NewString(ctx, getStrValue(key)));
+    }
+
+    string getValue = "()=>{ return this." + reKey + ";}";
+    JSValue getValueFun =
+        JS_EvalThis(ctx, element_obj, getValue.c_str(), getValue.length(),
+                    (key + "_getValue").c_str(), JS_EVAL_TYPE_GLOBAL);
+    string setValue = "(val)=>{ this.setAttribute('" + key + "',val);this." +
+                      reKey + "=val;}";
+    if (key == "innerHtml") {
+      setValue = "(val)=>{ this.setInnerHtml('" + key + "',val);this." + reKey +
+                 "=val;}";
+    }
+    JSValue setValueFun =
+        JS_EvalThis(ctx, element_obj, setValue.c_str(), setValue.length(),
+                    (key + "_setValue").c_str(), JS_EVAL_TYPE_GLOBAL);
+    JSAtom nameAtom = JS_NewAtom(ctx, key.c_str());
+    JS_DefineProperty(ctx, element_obj, nameAtom, JS_UNDEFINED, getValueFun,
+                      setValueFun,
+                      JS_PROP_C_W_E | JS_PROP_HAS_GET | JS_PROP_HAS_SET);
+  };
+  initProperty("id");
+  initProperty("width");
+  initProperty("height");
+  initProperty("paddingLeft");
+  initProperty("innerHtml");
+  //设置更新方法
   JSValue jsGetAttribute =
       JS_NewCFunction(ctx, js_getAttribute, "getAttribute", 1);
   JSValue jsSetAttribute =
       JS_NewCFunction(ctx, js_setAttribute, "setAttribute", 1);
-  auto initAttribute = [&](string key) {
-    JSAtom atom = JS_NewAtom(ctx, key.c_str());
-    JSValue jsSetAttribute = JS_NewCFunction2(
-        ctx, js_setAttribute, ("set " + key).c_str(), 1, JS_CFUNC_setter, 0);
-    JS_DefinePropertyGetSet(ctx, element_obj, atom, jsGetAttribute,
-                            jsSetAttribute, JS_PROP_NORMAL);
-    JS_FreeAtom(ctx, atom);
-  };
+  JSValue jsSetInnerHtml =
+      JS_NewCFunction(ctx, js_setInnerHtml, "setInnerHtml", 1);
   JS_SetPropertyStr(ctx, element_obj, "getAttribute", jsGetAttribute);
   JS_SetPropertyStr(ctx, element_obj, "setAttribute", jsSetAttribute);
-  JS_SetPropertyStr(ctx, element_obj, "id", JS_NewString(ctx, id.c_str()));
-  JS_SetPropertyStr(ctx, element_obj, "width",
-                    JS_NewString(ctx, getStrValue("width")));
-  JS_SetPropertyStr(ctx, element_obj, "height",
-                    JS_NewString(ctx, getStrValue("height")));
-  JS_SetPropertyStr(ctx, element_obj, "innerText",
-                    JS_NewString(ctx, dom->children->strVal.c_str()));
-
-  //设置width赋值监听
-  initAttribute("width");
-  initAttribute("height");
+  JS_SetPropertyStr(ctx, element_obj, "setInnerHtml", jsSetInnerHtml);
   return element_obj;
 }
 
@@ -453,7 +489,6 @@ DivComponent *domToDiv(DOM *dom, JSContext *ctx) {
 void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx) {
   //遇到js标签执行js代码
   if (curDOM->name == "javascript") {
-    printf("<javascript>:\n%s\n", curDOM->children->strVal.c_str());
     JS_Eval(ctx, curDOM->children->strVal.c_str(),
             curDOM->children->strVal.length(), "<javascript>",
             JS_EVAL_TYPE_GLOBAL);

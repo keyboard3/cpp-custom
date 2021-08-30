@@ -140,9 +140,9 @@ void parseTag(string parentName, DOM *dom) {
   list<DOM *> *child = new list<DOM *>();
   while (CurTok != tok_eof &&
          !(CurTok == tok_closeTag && TagStr == parentName)) {
-    //将非javascript标签下归档处理
+    //将非script标签下归档处理
     if (CurTok == tok_beginTag) {
-      if (parentName == "javascript") {
+      if (parentName == "script") {
         getNextToken();
         continue;
       }

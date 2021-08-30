@@ -19,11 +19,11 @@
     - [test_libuv](./quickjs/test_libuv.c): `基于libuv的loop实现js任务的执行`
         - 支持setTimeout,clearTimeout宏任务
         - 支持微任务及保证和宏任务的执行顺序
-- skia
-    - [jsGUI](./skia/jsGUI): `简易浏览器(基于Quickjs)`
-        - 支持简易 html 标记语言解析渲染
-        - 支持解析 javascript 标签运行
-        - 支持标签绑定 onclick 事件
-        - 支持 document.getElementById 读取指定dom对象
-        - 支持 dom 对象上 width,height,innerHtml 属性以及 setAttribute 重渲染
-        - 支持地址栏 (file,http,https) 协议访问渲染(同步阻塞)
+- [jsGUI](./skia):`简易浏览器(基于 Skia 和 Quickjs)`
+    - 支持简易 html 标记语言解析渲染
+    - 支持解析 javascript 标签运行
+    - 支持标签绑定 onclick 事件
+    - 支持 document.getElementById 读取指定dom对象
+    - 支持 dom 对象上 width,height,innerHtml 属性以及 setAttribute 重渲染
+    - 支持地址栏 file 协议访问本地文件渲染
+    - 支持地址栏 http/https 协议访问服务器渲染（同步，基于curl）

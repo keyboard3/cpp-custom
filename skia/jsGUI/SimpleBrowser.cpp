@@ -78,9 +78,9 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
   // 初始化完成，attach会触发的onBackendCreated
   fWindow->attach(fBackendType);
   //初始化Html页面
-  // address = "file://" + string(filesystem::current_path().c_str()) +
-  //           "/jsGUI/index.html";
-  address="https://raw.githubusercontent.com/keyboard3/cpp-custom/main/skia/jsGUI/index.html";
+  address = "file://" + string(filesystem::current_path().c_str()) +
+            "/jsGUI/index.html";
+  // address="https://raw.githubusercontent.com/keyboard3/cpp-custom/main/skia/jsGUI/index.html";
   loadUri(address);
 
   //添加地址栏
@@ -529,9 +529,9 @@ DivComponent *domToDiv(DOM *dom, JSContext *ctx) {
 
 void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx) {
   //遇到js标签执行js代码
-  if (curDOM->name == "javascript") {
+  if (curDOM->name == "script") {
     JS_Eval(ctx, curDOM->children->strVal.c_str(),
-            curDOM->children->strVal.length(), "<javascript>",
+            curDOM->children->strVal.length(), "<script>",
             JS_EVAL_TYPE_GLOBAL);
     //处理eval产生的微任务队列
     JSContext *ctx1;

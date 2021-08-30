@@ -1,14 +1,5 @@
 # cpp-custom
-纯手撸一些c++实现
-
-## 运行
-例如 libuv
-```shell
-cd libuv && mkdir build && cd build
-cmake .. && cmake --build .
-./hello
-```
-
+知道不难，难在实践。做到知行合一。
 ## 例子
 - [简单的栈机](./virtual-stack-machine.cpp): 进一步实现见我的 [learn-compiler / super-tiny-virtual-machine](https://github.com/keyboard3/learn-compiler/tree/main/cpp-super-tiny-virtual-machine) 以及 [learn-compiler / tiny-virtual-machine](https://github.com/keyboard3/learn-compiler/tree/main/cpp-tiny-virtual-machine)
 - [字节序验证](./endianness.cpp): 同理js可以通过ArrayBuffer来验证,见我的 [js-custom / array-buffer](https://github.com/keyboard3/js-custom/blob/main/array-buffer.mjs)

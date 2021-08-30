@@ -37,3 +37,8 @@
 **/out/*
 **/.dist/*
 **/.dsYM/*
+
+**/include
+**/modules
+**/out
+**/tools

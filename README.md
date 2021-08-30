@@ -12,13 +12,7 @@
 - [libuv](./libuv): `libuv官方部分示例实践`
 - [tcp/udp 通信](./socket): `网络通信实践，包括从单 socket 到多进程、多线程、select、kqueue、epoll等多socket的通信`
 - [curl](./curl):`curl官方部分示例实践`
-- quickjs
-    - [hello](./quickjs/hello.c): `打印'Hello World'`
-    - [test_fib](./quickjs/test_fib.c): `在js代码导入c++模块`
-    - [test_timeout](./quickjs/test_fib.c): `在js代码支持os系统任务的调用，如setTimeout`
-    - [test_libuv](./quickjs/test_libuv.c): `基于libuv的loop实现js任务的执行`
-        - 支持setTimeout,clearTimeout宏任务
-        - 支持微任务及保证和宏任务的执行顺序
+- [quickjs](./quickjs): `基于libuv的简易运行时、官方仓库中的部分示例`
 - [jsGUI](./skia):`简易浏览器(基于 Skia 和 Quickjs)`
     - 支持简易 html 标记语言解析渲染
     - 支持解析 javascript 标签运行

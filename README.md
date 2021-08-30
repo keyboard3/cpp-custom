@@ -18,8 +18,9 @@ cmake .. && cmake --build .
 - [gn simple example](./gn_example): `元构建系统gn构建示例`
 - [xml parser](./parser/xmlParser.cpp): `简易xml解析器`
 - [html parser](./parser/htmlParser.cpp): `简易html解析器`
-- [libuv](./libuv): `实践多个官方示例`
+- [libuv](./libuv): `libuv官方部分示例实践`
 - [tcp/udp 通信](./socket): `网络通信实践，包括从单 socket 到多进程、多线程、select、kqueue、epoll等多socket的通信`
+- [curl](./curl):`curl官方部分示例实践`
 - quickjs
     - [hello](./quickjs/hello.c): `打印'Hello World'`
     - [test_fib](./quickjs/test_fib.c): `在js代码导入c++模块`

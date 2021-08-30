@@ -167,17 +167,6 @@ void parseTag(string parentName, DOM *dom) {
       string(&html[tagContentStart], tagContentEnd - tagContentStart);
 }
 
-string getFileContent(string filepath) {
-  string content, line;
-  ifstream htmlFile(filepath);
-  if (htmlFile.is_open()) {
-    while (getline(htmlFile, line)) {
-      content += line;
-    }
-    htmlFile.close();
-  }
-  return content;
-}
 void parseHtmlToDOM(string content, DOM *dom) {
   initHtml();
   html = "<wrapper>" + content + "</wrapper>";

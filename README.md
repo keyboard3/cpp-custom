@@ -26,4 +26,4 @@
         - 支持标签绑定 onclick 事件
         - 支持 document.getElementById 读取指定dom对象
         - 支持 dom 对象上 width,height,innerHtml 属性以及 setAttribute 重渲染
-        - 支持地址栏 file:// 协议访问重刷新
+        - 支持地址栏 (file,http,https) 协议访问重新(同步阻塞)

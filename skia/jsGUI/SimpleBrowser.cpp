@@ -7,6 +7,7 @@
 
 #include "SimpleBrowser.h"
 #include "component.h"
+#include "curl/curl.h"
 #include "editor_layer.h"
 #include "evalJs.h"
 #include "filesystem"
@@ -19,6 +20,8 @@
 #include "iostream"
 #include "list"
 #include "quickjs/quickjs-libc.h"
+#include "stdlib.h"
+#include "string.h"
 using namespace std;
 
 #define countof(x) (sizeof(x) / sizeof((x)[0]))
@@ -45,6 +48,8 @@ int barHeight = 40;
 int canvasTop = barHeight;
 string address;
 void loadUri(string uri);
+string getRemoteContent(string url);
+string getFileContent(string filepath);
 Application *Application::Create(int argc, char **argv, void *platformData) {
   return new SimpleBrowser(argc, argv, platformData);
 }
@@ -73,13 +78,14 @@ SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
   // 初始化完成，attach会触发的onBackendCreated
   fWindow->attach(fBackendType);
   //初始化Html页面
-  address = "file://" + string(filesystem::current_path().c_str()) +
-                    "/jsGUI/index.html";
+  // address = "file://" + string(filesystem::current_path().c_str()) +
+  //           "/jsGUI/index.html";
+  address="https://raw.githubusercontent.com/keyboard3/cpp-custom/main/skia/jsGUI/index.html";
   loadUri(address);
 
   //添加地址栏
   addresEditor.fEditor.insert(Editor::TextPosition{0, 0}, address.c_str(),
-                             address.length());
+                              address.length());
   addresEditor.setFont();
   addresEditor.setCharCallback(onSearchChar);
   fWindow->pushLayer(&addresEditor);
@@ -298,13 +304,22 @@ void SimpleBrowser::freeJsEngine() {
 void loadUri(string uri) {
   idDomMap = new map<string, DOM *>();
   cout << "loadUri:" << uri << endl;
+  string htmlContent = "";
   if (uri.find("file://") != std::string::npos) {
-    rootDOM = parseHtml(getFileContent(uri.substr(7)));
-    readyJSDocument();
-    drawRoot();
+    htmlContent = getFileContent(uri.substr(7));
+  } else if (uri.find("http") != std::string::npos) {
+    htmlContent = getRemoteContent(uri);
+  } else {
+    perror("无效的uri\n");
     return;
   }
-  perror("无效的uri\n");
+  if (htmlContent.length() == 0) {
+    perror("没有内容\n");
+    return;
+  }
+  rootDOM = parseHtml(htmlContent);
+  readyJSDocument();
+  drawRoot();
 }
 
 void SimpleBrowser::freeHtmlPage() {
@@ -580,4 +595,65 @@ SkColor getColor(string strColor, SkColor defColor) {
     return SK_ColorMAGENTA;
 
   return defColor;
+}
+
+string getFileContent(string filepath) {
+  string content, line;
+  ifstream htmlFile(filepath);
+  if (htmlFile.is_open()) {
+    while (getline(htmlFile, line)) {
+      content += line;
+    }
+    htmlFile.close();
+  }
+  return content;
+}
+
+/* resizable buffer */
+typedef struct {
+  char *buf;
+  size_t size;
+} memory;
+
+/*使用回调而不用默认为了保证兼容性*/
+size_t grow_buffer(void *contents, size_t sz, size_t nmemb, void *ctx) {
+  size_t realsize = sz * nmemb;
+  memory *mem = (memory *)ctx;
+  char *ptr = (char *)realloc(mem->buf, mem->size + realsize);
+  if (!ptr) {
+    /* out of memory */
+    printf("not enough memory (realloc returned NULL)\n");
+    return 0;
+  }
+  mem->buf = ptr;
+  memcpy(&(mem->buf[mem->size]), contents, realsize);
+  mem->size += realsize;
+  return realsize;
+}
+
+string getRemoteContent(string url) {
+  CURLcode res;
+  CURL *curl = curl_easy_init();
+  if (curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); /*跟随重定向*/
+
+    memory *mem = (memory *)malloc(sizeof(memory));
+    mem->size = 0;
+    mem->buf = (char *)malloc(1);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, grow_buffer);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, mem);
+    curl_easy_setopt(curl, CURLOPT_PRIVATE, mem);
+    /* 执行请求， res 会得到返回码 */
+    res = curl_easy_perform(curl);
+    /* 检查错误 */
+    if (res != CURLE_OK)
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
+
+    /* 记得清理 */
+    curl_easy_cleanup(curl);
+    return string(mem->buf);
+  }
+  return "";
 }

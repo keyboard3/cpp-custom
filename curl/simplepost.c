@@ -19,13 +19,12 @@ int main(void)
     curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postthis);
  
-    /* if we don't provide POSTFIELDSIZE, libcurl will strlen() by
-       itself */
+    /* 如果我们不提供 POSTFIELDSIZE，libcurl 将用自己用 strlen() */
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(postthis));
  
-    /* Perform the request, res will get the return code */
+    /* 执行请求， res 会得到返回码 */
     res = curl_easy_perform(curl);
-    /* Check for errors */
+    /* 检查错误 */
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));

@@ -61,6 +61,11 @@ void onSearchChar(char ch) {
   }
   address += ch;
 }
+/*
+kNativeGL_BackendType: openGL gpu
+kVulkan_BackendType: vulkan gpu
+kRaster_BackendType: raster cpu 上面都不支持最后会采用这个
+*/
 SimpleBrowser::SimpleBrowser(int argc, char **argv, void *platformData)
     : fBackendType(Window::kRaster_BackendType) //(Window::kNativeGL_BackendType
 {
@@ -120,6 +125,25 @@ void SimpleBrowser::onBackendCreated() {
   fWindow->inval();
 }
 
+/*
+为 Raster 和 Ganesh backends创建画布的推荐方法是使用
+SkSurface，它是一个管理画布命令所绘制到的内存的对象。
+
+GPU Surfaces 必须有一个 GrContext 对象来管理 GPU
+上下文以及纹理和字体的相关缓存。 GrContexts 与 OpenGL 上下文或 Vulkan
+设备一对一匹配。也就是说，将使用相同的 OpenGL 上下文或 Vulkan 设备渲染的所有
+SkSurface 都应该共享一个 GrContext。 Skia 不会为您创建 OpenGL 上下文或 Vulkan
+设备。
+
+window::onPaint
+  fwindowContext 获取到 backBuffer(SkSurface*) 指针
+  关闭脏标记
+  调用每个 layer 的 onPrePaint 绘制前做准备
+  调用每个 layer 的 onPaint 向 backBuffer(SkSurface*) 上绘制
+  flushAndSubmit 刷新提交给 gpu
+  swapBuffers 写入的buffer 不同平台不一样的处理。Android上 是
+ANativeWindow_unlockAndPost(window)
+*/
 void SimpleBrowser::onPaint(SkSurface *surface) {
   auto canvas = surface->getCanvas();
   canvas->clear(SK_ColorWHITE);
@@ -531,8 +555,7 @@ void parseDOM(DivComponent *parentDiv, DOM *curDOM, JSContext *ctx) {
   //遇到js标签执行js代码
   if (curDOM->name == "script") {
     JS_Eval(ctx, curDOM->children->strVal.c_str(),
-            curDOM->children->strVal.length(), "<script>",
-            JS_EVAL_TYPE_GLOBAL);
+            curDOM->children->strVal.length(), "<script>", JS_EVAL_TYPE_GLOBAL);
     //处理eval产生的微任务队列
     JSContext *ctx1;
     int err;
